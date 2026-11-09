@@ -1,640 +1,491 @@
-# ExamPro — Exam Management System
+# ExamPro — Enterprise Online Examination Management Platform
 
-A complete, role-based online examination management platform built with **Jakarta Servlets**, **JSP**, **JDBC**, and **MySQL**, deployable on **Apache Tomcat 10.1**.
+[![Java](https://img.shields.io/badge/Java-17%2B-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://www.oracle.com/java/)
+[![Jakarta EE](https://img.shields.io/badge/Jakarta%20EE-10.0-F47C20?style=for-the-badge&logo=eclipse-ide&logoColor=white)](https://jakarta.ee/)
+[![Apache Tomcat](https://img.shields.io/badge/Apache%20Tomcat-10.1.x-F8DC75?style=for-the-badge&logo=apache-tomcat&logoColor=black)](https://tomcat.apache.org/)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0%2B-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![Maven](https://img.shields.io/badge/Apache%20Maven-3.8%2B-C71A36?style=for-the-badge&logo=apache-maven&logoColor=white)](https://maven.apache.org/)
+[![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)](https://getbootstrap.com/)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
----
-
-## Table of Contents
-
-1. [Technology Stack](#technology-stack)
-2. [Project Structure](#project-structure)
-3. [Prerequisites](#prerequisites)
-4. [Step 1 — Install Maven](#step-1--install-maven)
-5. [Step 2 — Set Up MySQL](#step-2--set-up-mysql)
-6. [Step 3 — Configure the Database Connection](#step-3--configure-the-database-connection)
-7. [Step 4 — Build the WAR File](#step-4--build-the-war-file)
-8. [Step 5 — Deploy to Tomcat](#step-5--deploy-to-tomcat)
-9. [Step 6 — Verify the Application](#step-6--verify-the-application)
-10. [Application URLs](#application-urls)
-11. [Current Status (All 10 Phases Complete)](#current-status)
-12. [Architecture Overview](#architecture-overview)
-13. [Security Notes](#security-notes)
+> A secure, role-based, full-lifecycle Online Examination Management Platform engineered with **pure Java**, **Jakarta Servlets 6.0**, **JSP 3.1**, **JDBC**, and **MySQL**, designed for deployment on **Apache Tomcat 10.1**.
 
 ---
 
-## Technology Stack
+## 📌 Table of Contents
 
-| Layer       | Technology                          |
-|-------------|-------------------------------------|
-| Language    | Java 17+ (compiled from Java 25 JDK)|
-| Web Layer   | Jakarta Servlets 6.0, JSP 3.1      |
-| Template    | JSTL 3.0, Expression Language (EL) |
-| Database    | MySQL 8+, JDBC                      |
-| Security    | BCrypt (at.favre.lib)               |
-| Server      | Apache Tomcat 10.1.x                |
-| Build       | Apache Maven 3.x                    |
-| Frontend    | Bootstrap 5.3, Bootstrap Icons      |
-| Fonts       | Google Fonts — Inter                |
-
-> **Why Tomcat 10.1?**  
-> Tomcat 10.1 implements Jakarta EE 10, which uses the `jakarta.*` namespace  
-> (not the older `javax.*`). All imports in this project use `jakarta.servlet.*`.
+1. [Project Overview](#-project-overview)
+2. [Key Features](#-key-features)
+   - [Administrator Portal](#1-administrator-portal)
+   - [Teacher / Faculty Panel](#2-teacher--faculty-panel)
+   - [Student Examination Engine](#3-student-examination-engine)
+   - [Notification & Communication Hub](#4-notification--communication-hub)
+3. [Security Architecture](#-security-architecture)
+4. [Technology Stack](#-technology-stack)
+5. [Application Architecture](#-application-architecture)
+6. [Project Structure](#-project-structure)
+7. [Database Setup & Automated Migrations](#-database-setup--automated-migrations)
+8. [Configuration Guide](#-configuration-guide)
+9. [Prerequisites](#-prerequisites)
+10. [Build & Installation](#-build--installation)
+11. [Tomcat Deployment](#-tomcat-deployment)
+12. [Application Access & Endpoints](#-application-access--endpoints)
+13. [Screenshots](#-screenshots)
+14. [Future Enhancements](#-future-enhancements)
+15. [Author & Links](#-author--links)
 
 ---
 
-## Project Structure
+## 🌟 Project Overview
+
+**ExamPro** is an enterprise-grade examination platform architected to manage the full assessment lifecycle within educational institutions and universities. It replaces paper-based workflows with a unified, digital ecosystem catering to three core stakeholders: **System Administrators**, **Faculty Members**, and **Student Candidates**.
+
+Unlike modern framework-heavy applications, ExamPro is built intentionally with **vanilla Jakarta EE 10 standards (Servlets 6.0, JSP 3.1) and raw JDBC**. This architectural choice demonstrates a mastery of low-level Java web fundamentals, connection pooling, transactional boundaries, session security, and clean MVC separation with zero dependency on Spring Boot or Hibernate.
+
+### Why Apache Tomcat 10.1?
+Tomcat 10.1 implements **Jakarta EE 10**, transitioning fully to the `jakarta.*` package namespace (deprecating legacy `javax.*` packages). All controllers, filters, and listeners in ExamPro strictly adhere to the modern Jakarta namespace.
+
+---
+
+## 🚀 Key Features
+
+### 1. Administrator Portal
+- **Executive Dashboard:** Real-time database telemetry tracking active student bodies, faculty counts, curriculum courses, ongoing tests, total submission attempts, and institutional pass rates.
+- **Unified User Directory:** Central management console across all roles (Admin, Teacher, Student) with keyword search, active status toggling, self-deactivation protection, and last-active-admin lockout guards.
+- **Student Candidate Management:** Registration tracking, enrolment verification, department filtering, and academic profile oversight.
+- **Faculty Management:** Departmental assignments, faculty ID assignment, workload distribution, and teaching authorizations.
+- **Curriculum & Subject Catalog:** Academic course administration with course code validation, credit configurations, and active status controls.
+- **Examination Lifecycle Management:** Complete state transitions (`DRAFT` $\rightarrow$ `SCHEDULED` $\rightarrow$ `ONGOING` $\rightarrow$ `COMPLETED` $\rightarrow$ `CANCELLED`), time limit configuration, passing mark boundaries, and candidate rosters.
+- **Central Question Bank Oversight:** Cross-curriculum question inspection filtered by subject, authoring faculty, difficulty (`EASY`, `MEDIUM`, `HARD`), topic name, and keyword search. Features safe relational deletion guards preventing accidental deletion of questions linked to exams.
+- **Result Moderation & Analytics:** Institutional scorecards, pass/fail and score distribution charts (Chart.js), on-demand result publication gates, and auditable marks adjustments with transaction-locked change tracking (`result_audit_logs`).
+- **Institutional Report Generation:** Role-scoped Excel-compatible CSV exports (with UTF-8 BOM encoding) and printable official grade sheets with signature blocks.
+- **Institutional Announcements:** Campus-wide notice board with priority levels (`NORMAL`, `IMPORTANT`, `URGENT`), target role scoping (`ALL`, `STUDENT`, `TEACHER`), scheduling windows, and automated in-app broadcasts.
+- **Central Security Audit Ledger:** Searchable, immutable event ledger recording logins, administrative updates, and exam events with client IP extraction and automated credential scrubbing.
+- **System Telemetry & Health:** Real-time JVM memory heap metrics (Used, Free, Max, Heap %), host CPU specifications, container context, and MySQL connection health diagnostics.
+
+### 2. Teacher / Faculty Panel
+- **Faculty Dashboard:** Personalized workspace showing assigned curriculum subjects, authored questions, upcoming test schedules, and candidate evaluation metrics.
+- **Question Bank & MCQ Authoring:** Interactive authoring tool supporting 4-option multiple-choice questions, difficulty indicators, subject alignment, topic tagging, point values, and explanation keys.
+- **Assigned Examinations Monitor:** Oversight of examinations scheduled under the teacher's authorized subjects.
+- **Exam Question Allocation:** Examination question allocator enabling faculty to attach questions from their bank, customize per-question marks, and enforce total mark requirements.
+- **Result Analytics & Item Difficulty Analysis:** Psychometric evaluation engine computing per-question accuracy rates, attempt counts, and difficulty rating indicators to identify problematic questions.
+- **Departmental Reports:** Course-scoped CSV export and printable grade rosters with item analysis breakdowns.
+- **Course Announcements:** Subject-specific announcement authoring with enrolled student broadcast dispatch; strictly protected against cross-teacher tampering.
+- **Faculty Profile Management:** Profile editing and secure self-service password updates with BCrypt validation.
+
+### 3. Student Examination Engine
+- **Candidate Dashboard:** Overview displaying active tests, upcoming exam alerts, total completed attempts, average performance percentage, and recent scorecards.
+- **Available Examinations Catalog:** Real-time filter showing published examinations currently open within their active test windows.
+- **Pre-Exam Instructions Room:** Checklist displaying duration, question count, scoring criteria, passing marks, and honor code rules prior to attempt initiation.
+- **Online Examination Room:**
+  - **Server-Synchronized Countdown Timer:** Anti-tampering timer calculated from server timestamps (`max_end_time`) to prevent client-side clock tampering.
+  - **Question Navigation Palette:** Interactive status grid tracking *Answered*, *Unanswered*, and *Marked for Review* questions.
+  - **Asynchronous Background Autosave:** Debounced AJAX synchronization preserving student choices across network disconnects.
+  - **Zero Answer-Key Leakage:** Sanitized question models (`ExamTakeQuestion`) that exclude correct answer flags from HTTP responses.
+- **Automatic Instant Evaluation:** Real-time scoring upon candidate submission or automatic timeout, evaluating answers, calculating percentages, and recording scorecard entries atomically.
+- **Performance Diagnostics & Analytics:** Diagnostic dashboard tracking score progression over time, subject proficiency breakdowns, identified strong topics ($\ge 70\%$), and weak areas needing remediation ($< 50\%$).
+- **Publication Privacy Protection:** Unreleased exam scorecards display an informative "Pending Publication" banner and withhold answer breakdowns until published by administration.
+- **Candidate Transcript Printing:** Official formatted printable result sheets.
+
+### 4. Notification & Communication Hub
+- **In-App Notification Center:** Database-backed notification center featuring live unread badge counters, category icons, priority tags, mark-read actions, individual dismissals, and bulk clear operations.
+- **Topbar Bell Component:** Reusable notification dropdown embedded across all portal headers with background AJAX polling.
+- **Asynchronous Resilient Email Service:** Background daemon thread pool email dispatch via Jakarta Mail 2.1 with graceful non-blocking fallback when SMTP is unconfigured.
+
+---
+
+## 🔒 Security Architecture
+
+ExamPro implements enterprise security standards across all layers:
+
+| Security Domain | Implementation Details |
+| :--- | :--- |
+| **Password Security** | One-way salted hashing using **BCrypt** (`at.favre.lib:bcrypt`, Cost Factor: 12). Passwords are never stored or logged in plain text. |
+| **Brute-Force Throttling** | 5 consecutive failed login attempts trigger an automated **15-minute temporary lockout** (`users.lockout_until`). Successful authentication resets the counter. |
+| **Session Fixation Defense** | Calls `request.changeSessionId()` upon successful authentication to rotate session tokens and neutralize fixation attacks. |
+| **Session Termination** | Complete server-side session invalidation and attribute cleansing upon logout (`/logout`). |
+| **Role-Based Access Control** | Enforced by `AuthenticationFilter`: `/admin/*` requires `ROLE_ADMIN`, `/teacher/*` requires `ROLE_TEACHER`, `/student/*` requires `ROLE_STUDENT`. Direct JSP URL access is blocked by placing all views under `/WEB-INF/views/`. |
+| **CSRF Defense** | Cryptographic synchronizer tokens (`CsrfUtil`) generated per session and validated on state-altering POST requests. |
+| **Sensitive Data Redaction** | `AuditService` regex-scrubs passwords, session IDs, and authorization tokens, replacing sensitive values with `[REDACTED]` before MySQL storage. |
+| **Immutable Audit Trail** | `AuditLogDAO` provides zero application update or delete endpoints, ensuring tamper-resistant compliance logs. |
+| **HTTP Security Headers** | Injected on every response: `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `X-XSS-Protection: 1; mode=block`, `Referrer-Policy: strict-origin-when-cross-origin`. |
+
+---
+
+## 💻 Technology Stack
+
+### Backend
+- **Core Platform:** Java 17+ (compiled for release 17 bytecode)
+- **Web Layer:** Jakarta Servlets 6.0, Jakarta Server Pages (JSP) 3.1
+- **Template Tags:** Jakarta Standard Tag Library (JSTL) 3.0
+- **Database Engine:** MySQL 8.0+
+- **Data Access:** Java Database Connectivity (JDBC) using raw SQL, `PreparedStatement`, and connection lifecycles
+- **Security:** BCrypt Hashing (`at.favre.lib:bcrypt:0.10.2`)
+- **Email Service:** Jakarta Mail 2.1 (`jakarta.mail-api:2.1.3` + `angus-mail:2.0.3`)
+- **Build System:** Apache Maven 3.8+
+- **Web Server:** Apache Tomcat 10.1.x
+
+### Frontend
+- **Framework:** Bootstrap 5.3 (Responsive Grid & Modals)
+- **Icons:** Bootstrap Icons 1.11
+- **Typography:** Google Fonts (Inter)
+- **Data Visualizations:** Chart.js (Doughnut, Bar, and Line charts)
+- **Design System:** Custom CSS3 Variables (`--ep-bg: #0f172a`, `--ep-card: #1e293b`, custom dark scrollbars)
+- **Interactivity:** Vanilla JavaScript (ES6+), Fetch API, Asynchronous AJAX Autosave
+
+---
+
+## 🏛 Application Architecture
+
+ExamPro follows a decoupled **Model-View-Controller (MVC)** architectural pattern with defense-in-depth security:
+
+```mermaid
+flowchart TD
+    subgraph Client["Client Tier (Browser)"]
+        UI["Bootstrap 5.3 + Responsive Dark Theme\n(Admin, Teacher, Student Portals)"]
+    end
+
+    subgraph FilterTier["Security & Filter Gateway"]
+        AF["AuthenticationFilter\n(Role Enforcement, HTTP Security Headers)"]
+        CS["CSRF Validation & Session Protection"]
+    end
+
+    subgraph ControllerTier["Controller Tier (Jakarta Servlets)"]
+        AC["Admin Servlets (Users, Exams, Results, Questions, System)"]
+        TC["Teacher Servlets (Questions, Allocation, Analytics, Notices)"]
+        SC["Student Servlets (Exam Room, Autosave, Results, Diagnostics)"]
+        CC["Common Servlets (Login, Logout, Notifications, Health)"]
+    end
+
+    subgraph ServiceTier["Data Access & Service Tier"]
+        DAO["13 JDBC Data Access Objects (DAOs)\n(PreparedStatement, Atomic Transactions, Row Locking)"]
+        AS["AuditService (Credential Redaction & Ledger)"]
+        ES["EmailService (Asynchronous Daemon Mailer)"]
+    end
+
+    subgraph PersistenceTier["Persistence Tier (MySQL 8.0+)"]
+        DB[("MySQL Database\n16 Relational Tables\nAutomatic Migrations via DatabaseMigrator")]
+    end
+
+    Client --> FilterTier
+    FilterTier --> ControllerTier
+    ControllerTier --> ServiceTier
+    ServiceTier --> PersistenceTier
+```
+
+---
+
+## 📁 Project Structure
 
 ```
 ExamPro/
-├── pom.xml                                   # Maven build configuration
-├── .gitignore                                # Excludes db.properties from Git
-├── README.md                                 # This file
+├── pom.xml                                   # Maven build configuration & dependencies
+├── .gitignore                                # Excludes compiled classes and db.properties
+├── README.md                                 # Technical documentation
 │
 └── src/
     └── main/
         ├── java/
         │   └── com/exampro/
-        │       ├── controller/               # Servlets (handle HTTP requests)
+        │       ├── controller/               # 27 Jakarta Servlets (Request Handlers)
+        │       │   ├── AdminAnnouncementServlet.java
+        │       │   ├── AdminAuditServlet.java
+        │       │   ├── AdminDashboardServlet.java
+        │       │   ├── AdminExamServlet.java
+        │       │   ├── AdminQuestionServlet.java
+        │       │   ├── AdminResultServlet.java
+        │       │   ├── AdminStudentServlet.java
+        │       │   ├── AdminSubjectServlet.java
+        │       │   ├── AdminSystemServlet.java
+        │       │   ├── AdminTeacherServlet.java
+        │       │   ├── AdminUserServlet.java
         │       │   ├── HealthCheckServlet.java
-        │       │   └── LoginServlet.java
-        │       ├── dao/                      # Data Access Objects (JDBC queries)
-        │       ├── filter/                   # Auth & Authorization Filters
-        │       │   └── AuthFilter.java
-        │       ├── model/                    # Java model/entity classes
+        │       │   ├── LoginServlet.java
+        │       │   ├── LogoutServlet.java
+        │       │   ├── NotificationServlet.java
+        │       │   ├── StudentDashboardServlet.java
+        │       │   ├── StudentExamServlet.java
+        │       │   ├── StudentExamTakeServlet.java
+        │       │   ├── StudentProfileServlet.java
+        │       │   ├── StudentResultServlet.java
+        │       │   ├── TeacherAnnouncementServlet.java
+        │       │   ├── TeacherDashboardServlet.java
+        │       │   ├── TeacherExamServlet.java
+        │       │   ├── TeacherProfileServlet.java
+        │       │   ├── TeacherQuestionServlet.java
+        │       │   └── TeacherResultServlet.java
+        │       ├── dao/                      # 13 Data Access Objects (Raw JDBC Queries)
+        │       │   ├── AdminDashboardDAO.java
+        │       │   ├── AnnouncementDAO.java
+        │       │   ├── AuditLogDAO.java
+        │       │   ├── ExamAttemptDAO.java
+        │       │   ├── ExaminationDAO.java
+        │       │   ├── ExamQuestionDAO.java
+        │       │   ├── ExamResultDAO.java
+        │       │   ├── NotificationDAO.java
+        │       │   ├── QuestionDAO.java
+        │       │   ├── StudentDAO.java
+        │       │   ├── SubjectDAO.java
+        │       │   ├── TeacherDAO.java
+        │       │   └── UserDAO.java
+        │       ├── filter/                   # Gateway Security Filters
+        │       │   └── AuthenticationFilter.java
+        │       ├── model/                    # Data Transfer Objects & Domain Models
+        │       │   ├── Announcement.java
+        │       │   ├── AuditDashboardStats.java
+        │       │   ├── AuditLog.java
+        │       │   ├── Examination.java
+        │       │   ├── ExamAttempt.java
+        │       │   ├── ExamQuestion.java
+        │       │   ├── ExamResult.java
+        │       │   ├── ExamTakeQuestion.java
+        │       │   ├── Notification.java
+        │       │   ├── Question.java
+        │       │   ├── QuestionOption.java
+        │       │   ├── ResultAuditLog.java
+        │       │   ├── Student.java
+        │       │   ├── Subject.java
+        │       │   ├── Teacher.java
         │       │   └── User.java
-        │       └── util/                     # Utility classes
+        │       └── util/                     # Enterprise Core Utilities
+        │           ├── AdminProvisioner.java
+        │           ├── AuditService.java
+        │           ├── CsrfUtil.java
+        │           ├── DatabaseMigrator.java
         │           ├── DBConnection.java
+        │           ├── EmailService.java
         │           └── PasswordUtil.java
         │
         ├── resources/
-        │   └── db.properties                 # ⚠ Database credentials (NOT in Git)
+        │   ├── db.properties                 # (Local configuration - git-ignored)
+        │   ├── schema.sql                    # Initial database schema
+        │   └── schema_update.sql             # Relational incremental schema
         │
         └── webapp/
-            ├── index.jsp                     # Landing page (public)
-            ├── login.jsp                     # Login form (public)
+            ├── index.jsp                     # Public Landing Page
+            ├── login.jsp                     # Unified Sign In View
             ├── css/
-            │   └── main.css                  # Global stylesheet
+            │   └── main.css                  # Modern Dark Theme Stylesheet
             ├── js/
-            │   └── main.js                   # Global JavaScript
+            │   └── main.js                   # Client-side validation & utilities
             └── WEB-INF/
-                ├── web.xml                   # Deployment descriptor
-                └── views/                    # Protected JSP views (no direct access)
-                    ├── admin/
-                    ├── teacher/
-                    ├── student/
-                    └── error/
-                        ├── 403.jsp
-                        ├── 404.jsp
-                        └── 500.jsp
-```
-
-> **Why are dashboard JSPs inside WEB-INF/views/?**  
-> Files inside `WEB-INF/` cannot be accessed directly via URL.  
-> A user can't type `http://localhost:8080/ExamPro/WEB-INF/views/admin/dashboard.jsp`  
-> and bypass authentication. Only Servlets can forward to these views.
-
----
-
-## Prerequisites
-
-Before you begin, make sure the following are installed:
-
-| Tool         | Version   | Where to get it                                      |
-|--------------|-----------|------------------------------------------------------|
-| JDK          | 17 or 25  | https://www.oracle.com/java/technologies/downloads/  |
-| Apache Maven | 3.6+      | https://maven.apache.org/download.cgi                |
-| Apache Tomcat| 10.1.x    | https://tomcat.apache.org/download-10.cgi            |
-| MySQL        | 8.0+      | https://dev.mysql.com/downloads/mysql/               |
-
-**Your system already has:**
-- ✅ Java 25 JDK at `C:\Program Files\Java\jdk-25`
-- ✅ Tomcat 10.1.26 at `D:\Programming Software\apache-tomcat-10.1.26`
-- ❌ Maven — **needs to be installed** (see Step 1)
-- ❓ MySQL — **needs to be verified** (see Step 2)
-
----
-
-## Step 1 — Install Maven
-
-Maven is not currently installed or not on your PATH. Follow these steps:
-
-### Option A: Install Maven manually (Recommended)
-
-1. Download Apache Maven 3.9.x from: https://maven.apache.org/download.cgi  
-   Download the **Binary zip archive** (e.g., `apache-maven-3.9.9-bin.zip`)
-
-2. Extract the ZIP to a folder. For example:  
-   `D:\Programming Software\apache-maven-3.9.9`
-
-3. Add Maven to your system PATH:
-   - Press `Win + R`, type `sysdm.cpl`, press Enter
-   - Go to **Advanced** tab → **Environment Variables**
-   - Under **System Variables**, find `Path` → click **Edit**
-   - Click **New** and add:  
-     `D:\Programming Software\apache-maven-3.9.9\bin`
-   - Also create a new System Variable:
-     - Name: `MAVEN_HOME`
-     - Value: `D:\Programming Software\apache-maven-3.9.9`
-   - Click OK on all dialogs.
-
-4. Open a **new** PowerShell/Command Prompt and verify:
-   ```powershell
-   mvn -version
-   ```
-   Expected output:
-   ```
-   Apache Maven 3.9.9 (...)
-   Java version: 25, ...
-   ```
-
-### Option B: Install with Chocolatey (if you have it)
-```powershell
-choco install maven -y
+                ├── web.xml                   # Deployment Descriptor
+                └── views/                    # Protected Views (Forbidden from direct URL)
+                    ├── admin/                # Administrator JSPs
+                    ├── teacher/              # Faculty JSPs
+                    ├── student/              # Candidate & Exam Room JSPs
+                    ├── notification/         # In-App Notification Center JSP
+                    ├── common/               # Modular Navigation Partials (notif_bell.jsp)
+                    └── error/                # Custom Error Handlers (403, 404, 500)
 ```
 
 ---
 
-## Step 2 — Set Up MySQL
+## 🗄 Database Setup & Automated Migrations
 
-### Check if MySQL is already installed:
-```powershell
+ExamPro uses a relational schema with **16 tables**, foreign key constraints, composite unique indexes, and audit logs.
+
+### 1. Create the MySQL Database
+Log in to your local or remote MySQL server and create the database:
+
+```sql
+CREATE DATABASE exampro
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+```
+
+### 2. Automated Schema Initialization
+You **do not** need to execute manual SQL files. On application startup, the built-in `DatabaseMigrator` automatically checks, creates, and upgrades all required tables, constraints, and indexes:
+
+1. `users` — Authentication credentials, roles, lockout timestamps
+2. `student_profiles` — Enrolment details and candidate demographics
+3. `teacher_profiles` — Faculty IDs, departments, qualifications
+4. `subjects` — Academic course catalog and credits
+5. `teacher_subjects` — Faculty-to-subject course mappings
+6. `examinations` — Test configurations, duration, mark thresholds, and publication flags
+7. `questions` — Question Bank items with difficulty and topics
+8. `question_options` — Multiple-choice options (A/B/C/D)
+9. `exam_questions` — Examination question allocations and marks
+10. `exam_attempts` — Candidate sessions, server clocks, and attempt statuses
+11. `student_answers` — Recorded answers, review flags, and evaluated scores
+12. `exam_results` — Final scorecards, percentage, pass/fail status
+13. `result_audit_logs` — Transactional marks modification audit history
+14. `announcements` — Institutional and subject notices with role targeting
+15. `notifications` — Database-backed candidate/faculty in-app alerts
+16. `audit_logs` — Centralized, immutable security and compliance ledger
+
+---
+
+## ⚙️ Configuration Guide
+
+ExamPro supports configuration via **properties files** or **environment variables**.
+
+### Option A: Configuration File (Recommended for Local Development)
+Create `src/main/resources/db.properties` (this file is excluded from Git):
+
+```properties
+# ── JDBC Driver ─────────────────────────────────────────────────────────────
+db.driver=com.mysql.cj.jdbc.Driver
+
+# ── JDBC URL ────────────────────────────────────────────────────────────────
+# Format: jdbc:mysql://HOST:PORT/DATABASE_NAME?parameters
+db.url=jdbc:mysql://localhost:3306/exampro?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&characterEncoding=UTF-8
+
+# ── Database Credentials ───────────────────────────────────────────────────
+db.username=YOUR_MYSQL_USERNAME
+db.password=YOUR_MYSQL_PASSWORD
+
+# ── Optional: SMTP Email Notification Settings ──────────────────────────────
+# (In-app notifications work fully even if SMTP is left unconfigured)
+mail.smtp.host=smtp.example.com
+mail.smtp.port=587
+mail.smtp.username=your-email@example.com
+mail.smtp.password=your-email-password
+mail.smtp.auth=true
+mail.smtp.starttls.enable=true
+mail.smtp.from=no-reply@exampro.com
+```
+
+### Option B: Environment Variables (Recommended for Production & Docker)
+Set the following environment variables on your server:
+
+| Environment Variable | Description | Example Value |
+| :--- | :--- | :--- |
+| `EXAMPRO_DB_URL` | JDBC connection string | `jdbc:mysql://localhost:3306/exampro?useSSL=false&serverTimezone=UTC` |
+| `EXAMPRO_DB_USER` | MySQL database username | `exampro_user` |
+| `EXAMPRO_DB_PASS` | MySQL database password | `YourSecurePassword` |
+| `EXAMPRO_DB_DRIVER` | JDBC Driver class (optional) | `com.mysql.cj.jdbc.Driver` |
+| `EXAMPRO_SMTP_HOST` | Outbound SMTP host (optional) | `smtp.mailgun.org` |
+| `EXAMPRO_SMTP_PORT` | Outbound SMTP port (optional) | `587` |
+| `EXAMPRO_SMTP_USER` | SMTP username (optional) | `postmaster@domain.com` |
+| `EXAMPRO_SMTP_PASS` | SMTP password (optional) | `secret-smtp-password` |
+
+---
+
+## 📋 Prerequisites
+
+Before building and running ExamPro, ensure you have the following installed:
+
+- **Java Development Kit (JDK):** Version 17 or higher
+- **Apache Maven:** Version 3.8 or higher
+- **MySQL Server:** Version 8.0 or higher
+- **Apache Tomcat:** Version 10.1.x *(Note: Tomcat 9 or earlier will fail due to the `javax.*` vs `jakarta.*` namespace difference)*
+
+Verify installations in your terminal:
+```bash
+java -version
+mvn -version
 mysql --version
 ```
 
-### If not installed:
-1. Download MySQL Community Server 8.0+ from:  
-   https://dev.mysql.com/downloads/mysql/
+---
 
-2. Run the installer. When prompted, set a **root password** — remember it!
+## 🔨 Build & Installation
 
-3. Make sure MySQL is running:
-   ```powershell
-   # Windows Services
-   Get-Service -Name "MySQL*"
-   # Or check MySQL Workbench
+1. **Clone the Repository:**
+   ```bash
+   git clone https://github.com/Pratham-D1/ExamPro.git
+   cd ExamPro
    ```
 
-### Create the Database:
-Once MySQL is running, open MySQL Workbench or the MySQL command-line client and run:
+2. **Configure Database Credentials:**
+   Ensure `src/main/resources/db.properties` is configured with your database credentials or set the respective environment variables.
 
-```sql
--- Create the database
-CREATE DATABASE IF NOT EXISTS exampro
-    CHARACTER SET utf8mb4
-    COLLATE utf8mb4_unicode_ci;
-
--- Verify it was created
-SHOW DATABASES;
-```
-
-> ℹ️ The full database schema (tables) will be created in Phase 2.  
-> For now, just creating the empty database is enough.
-
----
-
----
-
-## Step 3 — Configure Database Credentials
-
-ExamPro provides a flexible, secure configuration system in `DBConnection.java`. Credentials are never hardcoded into the source code.
-
-### Resolution Precedence:
-1. **Environment Variables** (Highest priority – recommended for security)
-2. **External properties file** (`src/main/resources/db.properties` or inside WAR at `WEB-INF/classes/db.properties`)
-3. **Safe local fallbacks** (`jdbc:mysql://localhost:3306/exampro`, user `root`)
-
----
-
-### Option A: Configure via Environment Variables (Windows)
-
-You can configure the database connection using Windows environment variables so credentials remain outside the codebase.
-
-| Variable Name | Description | Example Value |
-|---|---|---|
-| `EXAMPRO_DB_URL` | Full JDBC Connection URL | `jdbc:mysql://localhost:3306/exampro?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata` |
-| `EXAMPRO_DB_USER` | MySQL Username | `root` or `exampro_user` |
-| `EXAMPRO_DB_PASSWORD` | MySQL Password | `YourPasswordHere` |
-| `EXAMPRO_DB_HOST` *(optional)* | Database host (if URL omitted) | `localhost` |
-| `EXAMPRO_DB_PORT` *(optional)* | Database port (if URL omitted) | `3306` |
-| `EXAMPRO_DB_NAME` *(optional)* | Database name (if URL omitted) | `exampro` |
-
-#### 1. Permanent System Configuration via Windows GUI
-1. Press `Win + R`, type `sysdm.cpl`, and press **Enter**.
-2. Go to the **Advanced** tab and click **Environment Variables**.
-3. Under **User variables** or **System variables**, click **New**:
-   - Variable name: `EXAMPRO_DB_URL`
-   - Variable value: `jdbc:mysql://localhost:3306/exampro?useSSL=false&serverTimezone=Asia/Kolkata&allowPublicKeyRetrieval=true&characterEncoding=UTF-8`
-4. Click **New** again:
-   - Variable name: `EXAMPRO_DB_USER`
-   - Variable value: `root`
-5. Click **New** again:
-   - Variable name: `EXAMPRO_DB_PASSWORD`
-   - Variable value: *(your actual MySQL password)*
-6. Click **OK** to save. Restart Tomcat/IDE/Command prompt for changes to take effect.
-
-#### 2. Via PowerShell (for current session or permanent)
-```powershell
-# Current terminal session:
-$env:EXAMPRO_DB_URL = "jdbc:mysql://localhost:3306/exampro?useSSL=false&serverTimezone=Asia/Kolkata&allowPublicKeyRetrieval=true&characterEncoding=UTF-8"
-$env:EXAMPRO_DB_USER = "root"
-$env:EXAMPRO_DB_PASSWORD = "YourPasswordHere"
-
-# Set permanently for your user account:
-[System.Environment]::SetEnvironmentVariable("EXAMPRO_DB_URL", "jdbc:mysql://localhost:3306/exampro?useSSL=false&serverTimezone=Asia/Kolkata&allowPublicKeyRetrieval=true&characterEncoding=UTF-8", "User")
-[System.Environment]::SetEnvironmentVariable("EXAMPRO_DB_USER", "root", "User")
-[System.Environment]::SetEnvironmentVariable("EXAMPRO_DB_PASSWORD", "YourPasswordHere", "User")
-```
-
-#### 3. Via Command Prompt (CMD)
-```cmd
-:: For current session:
-set EXAMPRO_DB_URL=jdbc:mysql://localhost:3306/exampro?useSSL=false&serverTimezone=Asia/Kolkata&allowPublicKeyRetrieval=true&characterEncoding=UTF-8
-set EXAMPRO_DB_USER=root
-set EXAMPRO_DB_PASSWORD=YourPasswordHere
-
-:: Permanent:
-setx EXAMPRO_DB_URL "jdbc:mysql://localhost:3306/exampro?useSSL=false&serverTimezone=Asia/Kolkata&allowPublicKeyRetrieval=true&characterEncoding=UTF-8"
-setx EXAMPRO_DB_USER "root"
-setx EXAMPRO_DB_PASSWORD "YourPasswordHere"
-```
-
----
-
-### Option B: Configure via `db.properties`
-
-If you prefer file-based configuration, edit `src/main/resources/db.properties`:
-
-```properties
-db.driver=com.mysql.cj.jdbc.Driver
-db.url=jdbc:mysql://localhost:3306/exampro?useSSL=false&serverTimezone=Asia/Kolkata&allowPublicKeyRetrieval=true&characterEncoding=UTF-8
-db.username=root
-db.password=YourActualPassword
-```
-
-> 🔒 **Security Notice:** `db.properties` is listed in `.gitignore` and must never be checked into version control.
-
----
-
-## Step 4 — Build the WAR File
-
-Run Maven from the project root:
-
-```powershell
-mvn clean package
-```
-
-**What this does:**
-1. `clean` — deletes previous compiled files in `target/`.
-2. `compile` — compiles all Jakarta Servlets, filters, and JDBC utilities using Java 17 compatibility.
-3. `package` — packages all compiled classes, resources, and dependencies (including `mysql-connector-j-9.3.0.jar`) into `target/ExamPro.war`.
-
-**Expected output:**
-```
-[INFO] Building war: D:\Projects\Exam_Management_System\target\ExamPro.war
-[INFO] BUILD SUCCESS
-```
-
----
-
-## Step 5 — Deploy to Tomcat 10.1
-
-### Method A: Automated Build and Deploy Script
-A helper batch script `build.bat` is included:
-
-```powershell
-.\build.bat deploy
-```
-This script cleans, compiles, packages the WAR, cleans older Tomcat deployments, and copies `ExamPro.war` directly to your Tomcat `webapps\` directory.
-
-### Method B: Manual Deployment
-1. Ensure Tomcat is stopped:
-   ```powershell
-   & "D:\Programming Software\apache-tomcat-10.1.26\apache-tomcat-10.1.26\bin\shutdown.bat"
+3. **Build the Production WAR File:**
+   ```bash
+   mvn clean package
    ```
-2. Copy `target\ExamPro.war` to Tomcat's `webapps/` folder:
-   ```powershell
-   Copy-Item "target\ExamPro.war" "D:\Programming Software\apache-tomcat-10.1.26\apache-tomcat-10.1.26\webapps\"
+   *Maven will compile 81 source files and bundle all web assets and dependencies into `target/ExamPro.war`.*
+
+---
+
+## 🚢 Tomcat Deployment
+
+### Manual Deployment
+1. Stop Tomcat if it is currently running:
+   ```bash
+   # Linux/macOS
+   $CATALINA_HOME/bin/shutdown.sh
+
+   # Windows
+   %CATALINA_HOME%\bin\shutdown.bat
    ```
+
+2. Copy the generated `ExamPro.war` to the Tomcat `webapps` directory:
+   ```bash
+   # Linux/macOS
+   cp target/ExamPro.war $CATALINA_HOME/webapps/
+
+   # Windows
+   copy target\ExamPro.war %CATALINA_HOME%\webapps\
+   ```
+
 3. Start Tomcat:
-   ```powershell
-   & "D:\Programming Software\apache-tomcat-10.1.26\apache-tomcat-10.1.26\bin\startup.bat"
+   ```bash
+   # Linux/macOS
+   $CATALINA_HOME/bin/startup.sh
+
+   # Windows
+   %CATALINA_HOME%\bin\startup.bat
    ```
-4. Tomcat will automatically extract `ExamPro.war` into the `ExamPro/` directory.
+
+4. Tomcat will automatically extract `ExamPro.war` and deploy the context at `/ExamPro`.
 
 ---
 
-## Step 6 — Verify the Database Connection
+## 🌐 Application Access & Endpoints
 
-### 1. Direct Command-Line Diagnostic (Fastest)
-You can run the built-in diagnostic test without even opening Tomcat:
+### Default Portal URLs
+Once Tomcat is running, access the platform in your browser:
 
-```powershell
-java -cp "target\ExamPro\WEB-INF\classes;target\ExamPro\WEB-INF\lib\*" com.exampro.util.DBConnection
-```
+- **Landing Page:** `http://localhost:8080/ExamPro/`
+- **Login Portal:** `http://localhost:8080/ExamPro/login`
+- **Health Check Endpoint:** `http://localhost:8080/ExamPro/health`
+- **Database Diagnostic Page:** `http://localhost:8080/ExamPro/db-test` *(Development only)*
 
-**Expected output on success:**
-```
-==================================================
-   ExamPro Database Connection Diagnostic CLI     
-==================================================
-Configuration Source : Configuration File (db.properties)
-Target Database URL  : jdbc:mysql://localhost:3306/exampro?...
-Database Username    : root
-Testing connection...
+### Role Navigation Reference
 
-[SUCCESS] Connection established successfully!
-Ping Result     : 1
-Active Database : exampro
-Server Version  : 8.0.43
-Server Time     : 2026-10-12 17:56:39
-JDBC Driver     : MySQL Connector/J mysql-connector-j-9.3.0
-==================================================
-```
-
-### 2. Verify via Database Test Servlet (`/db-test`)
-Visit the dedicated test endpoint in your browser:
-```
-http://localhost:8080/ExamPro/db-test
-```
-
-**What it tests:**
-- Obtains a connection via `DBConnection.getConnection()`.
-- Executes a test query using `PreparedStatement`:
-  `SELECT 1 AS ping_status, DATABASE() AS active_db, CURRENT_TIMESTAMP() AS db_time, VERSION() AS mysql_ver`
-- Reads the result using `ResultSet`.
-- Returns **HTTP 200 OK** and a detailed status dashboard on success.
-- Returns **HTTP 500 Internal Server Error** with sanitized diagnostic error details if unreachable.
-- Never prints passwords or raw sensitive secrets.
-
-> ⚠️ **Development Endpoint Notice:**  
-> The `/db-test` servlet is designed strictly for development and staging verification. Before production deployment, remove `DatabaseTestServlet.java` or restrict its path in `AuthFilter.java`.
-
-### 3. Verify via Application Health Check (`/health`)
-Visit:
-```
-http://localhost:8080/ExamPro/health
-```
-Reports overall application status and whether DB status is `CONNECTED`.
+| Role | Portal URL | Primary Responsibilities |
+| :--- | :--- | :--- |
+| **Administrator** | `/admin/dashboard` | Users, Subjects, Exams, Question Bank, Results, Audit Logs, System Diagnostics |
+| **Faculty / Teacher** | `/teacher/dashboard` | Subject Oversight, MCQ Question Bank, Exam Allocation, Item Difficulty Analysis |
+| **Student** | `/student/dashboard` | Active Tests, Online Examination Room, Scorecards, Performance Diagnostics |
 
 ---
 
-## Application URLs
+## 📸 Screenshots
 
-| URL | Description | Access | HTTP Method |
-|---|---|---|---|
-| `http://localhost:8080/ExamPro/` | Landing page | Public | GET |
-| `http://localhost:8080/ExamPro/login` | Login page | Public | GET, POST |
-| `http://localhost:8080/ExamPro/logout` | Session termination | Authenticated | POST |
-| `http://localhost:8080/ExamPro/health` | Application health check | Public | GET |
-| `http://localhost:8080/ExamPro/db-test` | **Database connection test** | **Dev Only** | GET |
-| `http://localhost:8080/ExamPro/admin/dashboard` | Admin dashboard | Admin only | GET |
-| `http://localhost:8080/ExamPro/admin/students` | Admin student management | Admin only | GET, POST |
-| `http://localhost:8080/ExamPro/admin/teachers` | Admin faculty management | Admin only | GET, POST |
-| `http://localhost:8080/ExamPro/admin/subjects` | Admin course catalog | Admin only | GET, POST |
-| `http://localhost:8080/ExamPro/admin/examinations` | Admin exam schedules | Admin only | GET, POST |
-| `http://localhost:8080/ExamPro/admin/results` | Admin institutional results | Admin only | GET |
-| `http://localhost:8080/ExamPro/teacher/dashboard` | **Teacher overview & stats** | **Teacher only** | **GET** |
-| `http://localhost:8080/ExamPro/teacher/questions` | **Question Bank & MCQ CRUD** | **Teacher only** | **GET, POST** |
-| `http://localhost:8080/ExamPro/teacher/examinations` | **Exam question allocation** | **Teacher only** | **GET, POST** |
-| `http://localhost:8080/ExamPro/teacher/results` | **Student results & analytics** | **Teacher only** | **GET** |
-| `http://localhost:8080/ExamPro/teacher/profile` | **Profile & password security** | **Teacher only** | **GET, POST** |
-| `http://localhost:8080/ExamPro/teacher/results/export` | **Export Teacher Results (CSV)** | **Teacher only** | **GET** |
-| `http://localhost:8080/ExamPro/teacher/results/print` | **Print Faculty Grade Sheet & Item Analysis** | **Teacher only** | **GET** |
-| `http://localhost:8080/ExamPro/admin/results/export` | **Export Institutional Results (CSV)** | **Admin only** | **GET** |
-| `http://localhost:8080/ExamPro/admin/results/print` | **Print Institutional Examination Report** | **Admin only** | **GET** |
-| `http://localhost:8080/ExamPro/student/dashboard` | Student dashboard | Student only | GET |
-| `http://localhost:8080/ExamPro/student/analytics` | Candidate Performance Diagnostics | Student only | GET |
-| `http://localhost:8080/ExamPro/student/result/print` | Print Candidate Official Scorecard | Student only | GET |
-| `http://localhost:8080/ExamPro/admin/announcements` | Admin Announcement Center | Admin only | GET, POST |
-| `http://localhost:8080/ExamPro/teacher/announcements` | Teacher Course Notices | Teacher only | GET, POST |
-| `http://localhost:8080/ExamPro/notifications` | In-App Notification Center | Authenticated | GET, POST |
-| `http://localhost:8080/ExamPro/notifications/api` | Real-time Notification JSON API | Authenticated | GET |
-| `http://localhost:8080/ExamPro/admin/audit-logs` | **Security Audit Logs Console** | **Admin only** | **GET** |
-| `http://localhost:8080/ExamPro/admin/users` | **Unified User Management Console** | **Admin only** | **GET, POST** |
-| `http://localhost:8080/ExamPro/admin/system` | **System Health & JVM Telemetry** | **Admin only** | **GET** |
+*(Screenshots can be added here to showcase the platform UI)*
+
+| Portal / View | Preview |
+| :--- | :--- |
+| **Landing & Authentication** | ![Landing Page](docs/screenshots/landing_page.png) |
+| **Admin Operational Dashboard** | ![Admin Dashboard](docs/screenshots/admin_dashboard.png) |
+| **Teacher Question Bank & MCQs** | ![Teacher Question Bank](docs/screenshots/teacher_questions.png) |
+| **Real-Time Student Test Room** | ![Student Exam Take](docs/screenshots/exam_room.png) |
+| **Student Diagnostic Analytics** | ![Student Analytics](docs/screenshots/student_analytics.png) |
+| **In-App Notification Center** | ![Notification Center](docs/screenshots/notification_center.png) |
 
 ---
 
-## Troubleshooting Guide
+## 🔮 Future Enhancements
 
-| Issue / Error | Cause | Resolution |
-|---|---|---|
-| **Connection Refused**<br>`CommunicationsException: Communications link failure`<br>`ConnectException: Connection refused` | MySQL service is stopped, or listening on a different port/host. | 1. Open PowerShell and run: `Get-Service -Name "MySQL*"`<br>2. Start the service: `Start-Service -Name "MySQL80"`<br>3. Verify MySQL is on port 3306: `netstat -ano \| findstr 3306` |
-| **Access Denied**<br>`SQLException: Access denied for user 'root'@'localhost'`<br>(SQLState: 28000, ErrorCode: 1045) | Wrong MySQL username or password provided. | 1. Double-check your password by connecting with mysql CLI: `mysql -u root -p`<br>2. Update your `EXAMPRO_DB_PASSWORD` environment variable or `src/main/resources/db.properties`.<br>3. Rebuild and redeploy. |
-| **Missing Driver**<br>`ClassNotFoundException: com.mysql.cj.jdbc.Driver` | The MySQL Connector/J JAR is missing from the classpath / WAR. | 1. Ensure `com.mysql:mysql-connector-j` is in `pom.xml` with compile scope (do not set scope to provided).<br>2. Verify `target/ExamPro/WEB-INF/lib/mysql-connector-j-*.jar` exists.<br>3. Run `mvn clean package`. |
-| **Public Key Retrieval Not Allowed**<br>`SQLException: Public Key Retrieval is not allowed` | MySQL 8+ uses `caching_sha2_password` authentication by default, requiring public key retrieval over insecure connections. | Ensure your JDBC URL contains `allowPublicKeyRetrieval=true` and `useSSL=false` (for local development). |
-| **Unknown Database**<br>`SQLException: Unknown database 'exampro'`<br>(ErrorCode: 1049) | The database has not been created yet in MySQL. | Run the following SQL command in MySQL:<br>`CREATE DATABASE IF NOT EXISTS exampro CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;` |
-| **Timezone Error**<br>`SQLException: The server time zone value is unrecognized` | MySQL server timezone is not set or not mapped. | Ensure your JDBC URL has `serverTimezone=UTC` or `serverTimezone=Asia/Kolkata`. |
+- [ ] **Automated AI Proctoring:** Client-side tab-switch detection, webcam proctoring, and suspicious movement alerts.
+- [ ] **Rich Question Types:** Support for coding sandbox challenges, drag-and-drop ordering, and essay subjective evaluations.
+- [ ] **Bulk Import / Export:** Question import via Excel/CSV and batch candidate roster ingestion.
+- [ ] **Two-Factor Authentication (2FA):** Time-based one-time password (TOTP / Google Authenticator) for administrative and faculty accounts.
+- [ ] **Progressive Web App (PWA):** Offline capability for exam instructions and low-bandwidth network tolerance.
 
 ---
 
-## Current Status
+## 👤 Author & Links
 
-### Phase 1: Foundation & Project Structure — ✅ COMPLETE
-- Maven multi-layer structure, Servlet 6.0, JSP 3.1, JSTL 3.0, BCrypt.
-- UI views, responsive styles, base layout.
-
-### Phase 2: MySQL and JDBC Connection — ✅ COMPLETE
-- Compatible `mysql-connector-j` (9.3.0) configured via Maven.
-- Reusable `DBConnection` utility with environment variable overrides and sanitized logs.
-- `DatabaseTestServlet` mapped to `/db-test` with `PreparedStatement` & `ResultSet` verification.
-
-### Phase 3: Authentication and Authorization — ✅ COMPLETE
-- Database table `users` created with UNIQUE email, CHECK constraint on roles (`ADMIN`, `TEACHER`, `STUDENT`), and timestamp tracking.
-- `User` model and `UserDAO` with `PreparedStatement` and connection lifecycle management.
-- BCrypt password hashing (`cost: 12`) via `PasswordUtil`.
-- `LoginServlet` (`/login`) with generic error handling, session fixation prevention (`request.changeSessionId()`), and role-based redirects.
-- `LogoutServlet` (`/logout`) with HTTP POST enforcement, CSRF verification, and session invalidation.
-- `AuthenticationFilter` (`/*`) enforcing server-side role boundaries and back-button cache prevention.
-- Protected dashboards for Admin (`/admin/dashboard`), Teacher (`/teacher/dashboard`), and Student (`/student/dashboard`) inside `WEB-INF/views/`.
-- `AdminProvisioner` offline CLI tool for provisioning initial administrator accounts.
-- Automated security test suite (`AuthVerificationRunner`) passing 9/9 verification scenarios against live MySQL.
-
-#### Provisioned Test Accounts:
-| Role | Email | Default Test Password | Status |
-|---|---|---|---|
-| **Administrator** | `admin@exampro.com` | `Admin@ExamPro2026!` | Active |
-| **Teacher** | `teacher@exampro.com` | `Teacher@ExamPro2026!` | Active |
-| **Student** | `student@exampro.com` | `Student@ExamPro2026!` | Active |
-| **Inactive Student** | `inactive@exampro.com` | `Inactive@ExamPro2026!` | Inactive (Testing) |
-
-### Phase 4: Full Administrator Management Module — ✅ COMPLETE
-- Extended schema: `student_profiles`, `teacher_profiles`, `subjects`, `teacher_subjects`, `examinations`, `exam_results`.
-- Full Admin CRUD controllers: `AdminDashboardServlet`, `AdminStudentServlet`, `AdminTeacherServlet`, `AdminSubjectServlet`, `AdminExamServlet`, `AdminResultServlet`.
-- Admin views under `WEB-INF/views/admin/` (`dashboard.jsp`, `students.jsp`, `teachers.jsp`, `subjects.jsp`, `examinations.jsp`, `results.jsp`).
-- Automated system verification suite (`AdminSystemVerification`).
-
-### Phase 5: Complete Teacher Panel & Question Bank — ✅ COMPLETE
-- Extended schema: `questions`, `question_options`, and `exam_questions`.
-- Full Teacher CRUD controllers:
-  - `TeacherDashboardServlet` (`/teacher/dashboard`): Live metrics, assigned subjects, upcoming examinations, and difficulty charts.
-  - `TeacherQuestionServlet` (`/teacher/questions`): Complete Question Bank CRUD, MCQ options (A/B/C/D), subject authorization checks, search, filtering (subject, difficulty, topic).
-  - `TeacherExamServlet` (`/teacher/examinations`): Assigned exam oversight, exam question allocation, and real-time examination readiness check.
-  - `TeacherResultServlet` (`/teacher/results`): Performance summaries (attempts, pass/fail rate, average marks), search by student, filter by examination.
-  - `TeacherProfileServlet` (`/teacher/profile`): Permitted profile edits, assigned subjects display, and BCrypt-secured password change.
-- Modern responsive views under `WEB-INF/views/teacher/` (`dashboard.jsp`, `questions.jsp`, `examinations.jsp`, `exam_manage.jsp`, `results.jsp`, `profile.jsp`, `sidebar.jsp`).
-- Automated system verification suite (`TeacherSystemVerification`) validating 9/9 backend scenarios.
-
-### Phase 6: Student Examination Engine & Real-Time Assessment — ✅ COMPLETE
-- Extended schema: `exam_attempts` and `student_answers` with cascade relations and composite uniqueness constraints.
-- Real-time Assessment Engine:
-  - `StudentDashboardServlet` (`/student/dashboard`): Live stats (available, upcoming, completed exams, average percentage, pass/fail counts), recent scorecards.
-  - `StudentExamServlet` (`/student/exams`, `/student/my-exams`): Dynamic filtering for ongoing, upcoming, and completed examinations with contextual action buttons (Start, Resume, View Result).
-  - `StudentExamTakeServlet`:
-    - `/student/exam/instructions`: Examination rules, time constraints, marking scheme, and start confirmation modal.
-    - `/student/exam/start`: Atomic attempt creation and session clock initialization.
-    - `/student/exam/take`: Interactive test environment displaying one question at a time, 4 MCQ option cards, Mark for Review toggle, Clear selection, Question Palette grid (Answered, Unanswered, Marked for Review), and live countdown timer.
-    - `/student/exam/save-answer`: Asynchronous background auto-saving with server-side time verification.
-    - `/student/exam/submit`: Strict atomic transaction evaluation comparing student choices against protected correct keys, calculating marks, percentage, and Pass/Fail against passing threshold, upserting into `exam_results`.
-  - `StudentResultServlet` (`/student/results`, `/student/result-detail`): Past scores list and comprehensive question-by-question review (revealing correct answers, student selection, marks awarded, and solution explanations only after submission).
-  - `StudentProfileServlet` (`/student/profile`): Permitted self-update (phone, department, class level) and secure BCrypt password change.
-- Strict Security Enforcement:
-  - Zero answer key leakage: Questions delivered to the test room strictly sanitize the `is_correct` field (`ExamTakeQuestion` DTO).
-  - Server-side timer validation: Disregards client-side manipulation; automatically locks and evaluates attempts upon duration expiry.
-  - Ownership & Duplicate protection: Students cannot attempt an exam more than once, nor submit on behalf of other candidates.
-- Modern responsive views under `WEB-INF/views/student/` (`sidebar.jsp`, `dashboard.jsp`, `exams.jsp`, `exam_instructions.jsp`, `exam_take.jsp`, `results.jsp`, `result_detail.jsp`, `profile.jsp`).
-- Automated system verification suite (`StudentSystemVerification`) passing 77/77 tests with 100% success rate.
-
-### Phase 7: Result Management & Analytics — ✅ COMPLETE
-- Extended schema:
-  - Table `result_audit_logs` tracking all administrative marks corrections with previous/new marks, reason, modifier ID, and timestamp.
-  - Columns `results_published` (BOOLEAN DEFAULT TRUE) and `results_published_at` (TIMESTAMP) in `examinations`.
-  - Column `is_published` (BOOLEAN DEFAULT TRUE) in `exam_results`.
-  - Automated database migration via `DatabaseMigrator`.
-- Admin Result Dashboard & Management (`/admin/results`):
-  - Real database metrics: conducted exams, attempts, evaluated submissions, pass/fail counts & percentages, average score, highest, lowest, publication counts.
-  - Interactive Chart.js visualizations: Pass vs Fail Doughnut chart, Score Distribution Bar chart (80-100%, 60-79%, 40-59%, <40%), and Subject Performance Comparison.
-  - Multi-Criteria Filtering: Filter by examination, subject, candidate, start/end dates, pass/fail status, and publication status.
-  - Result Publication Control: Admins can publish or unpublish examination results on demand.
-  - Auditable Marks Correction Workflow: Admins can update marks with row lock transactions (`SELECT ... FOR UPDATE`); validates marks boundaries, recalculates percentages, updates pass/fail status, and records an auditable justification trail into `result_audit_logs`.
-- Teacher Result Analytics (`/teacher/results`):
-  - Scoped strictly to examinations and subjects authorized for the authenticated teacher.
-  - Evaluation KPIs (candidate attempts, average marks, highest, lowest, pass/fail rates).
-  - Question-by-Question Item Analysis: Evaluates candidate answers to compute question topic, difficulty, points, attempts, correct, incorrect, unattempted, accuracy percentage, and difficulty rating badge.
-- Student Performance Diagnostics (`/student/analytics`):
-  - Candidate-specific performance dashboard showing overall average, best score, and subject proficiency breakdowns.
-  - Historical Score Progression Trajectory over time with Chart.js.
-  - Weak Area Diagnostic: Automatically flags topics with accuracy < 50% as "Areas for Improvement" and topics with accuracy >= 70% as "Demonstrated Mastery".
-  - Publication Privacy Enforcement: If results are unpublished by administration, students are blocked from viewing detailed scorecards with an informative "Pending Publication" badge.
-- Multi-Format Report Export & Print Engine:
-  - CSV Export: Role-scoped CSV download with UTF-8 BOM encoding for seamless Microsoft Excel compatibility (`/admin/results/export`, `/teacher/results/export`).
-  - Institutional Printable Reports: High-definition printable grade sheets with specialized `@media print` layout, institutional headers, statistics boxes, candidate rosters, item analysis, and signature blocks (`/admin/results/print`, `/teacher/results/print`, `/student/result/print`).
-- Automated Verification Test Suite (`ResultAnalyticsVerification`):
-  - 89 / 89 tests passing with 100% success rate across schema migrations, metrics calculations, multi-filtering, publication controls, auditable marks adjustments, teacher item analysis, and student diagnostic analytics.
-
-### Phase 8: Notifications & Communication System — ✅ COMPLETE
-- Extended schema:
-  - Table `announcements` supporting institutional and course notices with title, content, priority (`NORMAL`, `IMPORTANT`, `URGENT`), target role (`ALL`, `STUDENT`, `TEACHER`, `ADMIN`), assigned subject scoping, publication state, start/expiry windows, and audit timestamps.
-  - Table `notifications` supporting persistent database-backed candidate/faculty alerts with user ID, title, message, category (`EXAM_AVAILABLE`, `EXAM_UPCOMING`, `SCHEDULE_CHANGE`, `RESULT_PUBLISHED`, `ANNOUNCEMENT`, `ACCOUNT_UPDATE`, `SYSTEM`), priority, contextual action URL, read state, read timestamp, soft-delete flag, and created timestamp.
-  - Automated database migration via `DatabaseMigrator` (DDLs #13 and #14).
-- Admin Announcement Center (`/admin/announcements`):
-  - Comprehensive announcement management: create, edit, delete, publish, and unpublish notices.
-  - Multi-dimensional filtering by search keywords, priority levels, target roles, and publication status with full pagination.
-  - Immediate in-app broadcast alert dispatch checkbox during announcement creation.
-  - KPI metric cards: Total Announcements, Published, Active, and Total In-App Broadcasts Dispatched.
-- Teacher Communication Hub (`/teacher/announcements`):
-  - Scoped strictly to subjects assigned to the authenticated faculty member.
-  - Prevents cross-teacher tampering (teachers cannot edit or delete notices belonging to others or post to unassigned courses).
-  - Real-time in-app broadcast alerts to all candidates enrolled in the teacher's subject or active students.
-- Unified In-App Notification Center (`/notifications`):
-  - Multi-tab view: All alerts and Unread alerts with live count badges.
-  - Pinned Active Institutional Announcements banner with priority styling.
-  - Interactive actions: Mark single as read, Mark all as read, Dismiss single alert, and Clear all read alerts.
-  - Strict security isolation ensuring candidates and faculty can only view, read, and dismiss their own notifications.
-  - RESTful JSON polling endpoint (`/notifications/api`) providing asynchronous updates to the top navigation bar.
-- Reusable Topbar Bell Dropdown (`notif_bell.jsp`):
-  - Embedded seamlessly across Admin, Teacher, and Student portal headers.
-  - Real-time AJAX polling with animated unread badge counter and quick-read popup dropdown.
-- Automated Event Notification Triggers:
-  - Exam submission & evaluation: Instantly delivers a scorecard alert to the candidate upon exam completion (`StudentExamTakeServlet`).
-  - Result publication: Automatically dispatches notifications to all candidates when an administrator publishes exam results (`AdminResultServlet`).
-- Resilient Asynchronous Email Service (`EmailService.java`):
-  - Powered by Jakarta Mail 2.1 (`jakarta.mail-api` + `angus-mail`) running on an asynchronous daemon thread pool (`ExecutorService`).
-  - Configurable via environment variables (`EXAMPRO_SMTP_*`) or `db.properties` (`mail.smtp.*`).
-  - Resilient non-blocking fallback: Missing or unreachable SMTP configurations log warnings and never fail user transactions or in-app notifications.
-- Automated System Verification Suite (`NotificationSystemVerification`):
-  - 60 / 60 tests passing with 100% success rate across schema verification, Admin announcements, Teacher course notices, in-app notification center lifecycle, user data isolation, broadcasting, and email service resilience.
-
-### Phase 9: Audit Logs, Security & System Administration — ✅ COMPLETE
-- Extended schema:
-  - Table `audit_logs` tracking user ID, role, action, module (`AUTH`, `USER`, `SUBJECT`, `EXAM`, `QUESTION`, `RESULT`, `ANNOUNCEMENT`, `SYSTEM`), description (sanitized), client IP address, status (`SUCCESS`, `FAILURE`), and timestamp.
-  - Indexes on `audit_logs`: `idx_audit_user`, `idx_audit_role`, `idx_audit_module`, `idx_audit_action`, `idx_audit_status`, `idx_audit_created`.
-  - Columns `last_login_at` (TIMESTAMP), `failed_login_attempts` (INT DEFAULT 0), and `lockout_until` (TIMESTAMP) in table `users`.
-  - Automated database migration via `DatabaseMigrator` (DDL #15).
-- Centralized Audit Logging Architecture:
-  - Thread-safe, non-blocking `AuditService` facade and `AuditLogDAO`.
-  - Sensitive Data Redaction: Regular-expression based automatic redaction (`sanitize(...)`) scrubbing passwords, hashes, tokens, session IDs, and authentication credentials with `[REDACTED]` prior to MySQL storage.
-  - Immutable Audit Ledger: Application interface provides zero edit or delete endpoints, ensuring log integrity and tamper-proof compliance.
-  - Automatic Client IP Extraction supporting reverse proxies and load balancers (`X-Forwarded-For`, `X-Real-IP`, `getRemoteAddr()`).
-- Admin Audit Dashboard (`/admin/audit-logs`):
-  - 4 KPI summary cards: Total Logged Activities, Successful Logins, Failed Login Attempts, and Administrative/Exam Operations.
-  - Multi-Dimensional Filter Toolbar: Filter by User Role, Module, Action, Status (`SUCCESS`, `FAILURE`), and Date Range (Start Date, End Date).
-  - Keyword Search matching event descriptions, client IP addresses, actor names, and emails.
-  - Forensic Activity Table with color-coded status, module, and action badges.
-  - Detail Inspection Modal for deep audit analysis.
-  - Server-side pagination with configurable page sizes.
-- Unified User Management Console (`/admin/users`):
-  - Master directory of all system accounts across roles (Admins, Teachers, Students).
-  - Search by name or email; filter by role and active/inactive status.
-  - Role count summaries (Total Admins, Total Teachers, Total Students).
-  - Account Activation & Deactivation toggle with CSRF protection.
-  - Safety Guards:
-    - Self-deactivation prevention: An administrator cannot deactivate their own account.
-    - Last Active Admin Lockout Prevention: The system blocks deactivating the sole remaining active administrator.
-  - Manual Lockout Reset: Administrators can unlock throttled accounts with a single click.
-- Security Hardening & Enterprise Protections:
-  - Brute-Force Throttling: 5 consecutive failed login attempts trigger an automatic 15-minute temporary lockout (`lockout_until`).
-  - Session Fixation Prevention: Invokes `request.changeSessionId()` on successful authentication to prevent session hijacking.
-  - Session Termination: Complete session invalidation and attribute cleansing upon logout.
-  - Enterprise Security Response Headers enforced via `AuthenticationFilter`:
-    - `X-Content-Type-Options: nosniff`
-    - `X-Frame-Options: SAMEORIGIN`
-    - `X-XSS-Protection: 1; mode=block`
-    - `Referrer-Policy: strict-origin-when-cross-origin`
-- System Overview & Health Diagnostics (`/admin/system`):
-  - Real Database Metrics (zero hardcoded values): Total Students, Teachers, Admins, Exams, Questions, Attempts, Published Results, and Audit Records.
-  - Live JVM Memory Telemetry: Total, Used, Free, and Max memory in megabytes with real-time percentage heap bar.
-  - Server & Host Specs: Operating System, Java vendor and version, available processor cores, servlet container context info.
-  - Database Diagnostics: MySQL engine version, JDBC URL, driver name/version, and active connection health check.
-  - Live stream of recent audit activities.
-- Automated Verification Test Suite (`AuditSystemVerification`):
-  - 68 / 68 tests passing with 100% success rate across schema migrations, immutable logging, password redaction, multi-filtering, brute-force lockout, recovery, user console protections, and system telemetry.
-
-### Phase 10: Final Integration, UI Polish & Deployment Readiness — ✅ COMPLETE
-- Admin Question Bank & Oversight Console (`/admin/questions`):
-  - Centralized curriculum question management for administrators (`AdminQuestionServlet` + `admin/questions.jsp`).
-  - Multi-Criteria Filtering: Filter questions across all subjects, authoring faculty, difficulty levels (`EASY`, `MEDIUM`, `HARD`), topic names, and keyword search.
-  - Detailed Question Inspection Modal: View question text, topic, points, difficulty badge, creation date, author name, and all 4 sanitized MCQ options with highlighted correct answers.
-  - Safe Relational Deletion Guard (`QuestionDAO.adminDeleteQuestion`): System checks whether a question is referenced in any examinations (`exam_questions`). If assigned, deletion is strictly blocked with a user-friendly error message, preserving exam integrity.
-  - Full audit logging via `AuditService.logSuccess` and `AuditService.logFailure`.
-  - Added Question Bank navigation item to Admin Sidebar and Dashboard Quick Actions.
-- Design System & UI/UX Polish:
-  - Unified dark theme across all portals (Admin, Teacher, Student) using CSS custom properties (`--ep-bg: #0f172a`, `--ep-card: #1e293b`, `--ep-border: #334155`, etc.).
-  - Modularized navigation: Unified all Admin views (`students.jsp`, `teachers.jsp`, `subjects.jsp`, `examinations.jsp`, `questions.jsp`, `announcements.jsp`, `audit_logs.jsp`, `users.jsp`, `system.jsp`) to use the reusable `<jsp:include page="sidebar.jsp">` with active link highlighting.
-  - Consistent Topbar Notification Bell (`notif_bell.jsp`) embedded across all portal headers with real-time AJAX unread polling and quick-access dropdown.
-  - Custom dark scrollbars (`::-webkit-scrollbar`) with smooth scrolling for responsive tables and modals.
-  - Standardized empty-state components (`.ep-empty-state`) with contextual icons, messages, and action buttons.
-  - Card hover elevation, button ripple transitions, form control focus glow, and glassmorphism modal backdrops.
-- Cross-Module Integration & Relational Synchronization:
-  - Updated `ExaminationDAO` to project `e.results_published` and `e.results_published_at` in all queries (`SQL_SELECT_ALL`, `SQL_FIND_BY_ID`, `findAllByTeacher`, `findAvailableForStudent`, `findMyExamsForStudent`), ensuring publication status toggled by Admins dynamically controls result visibility for Teachers and Students.
-  - Seamless end-to-end integration across all 10 phases:
-    1. Infrastructure & Database Migrations (16 tables, clean DDL pipeline).
-    2. Authentication & Brute-Force Throttling (BCrypt, 5-attempt lockout).
-    3. Admin Operations (Users, Subjects, Teachers, Students, Exams, Questions, System).
-    4. Teacher Faculty Panel (Subjects, Question Bank, Exam Allocation, Item Analysis).
-    5. Student Engine (Attempt Clock, Autosave, 0-leakage sanitization, Instant Evaluation).
-    6. Result Management & Analytics (Pass/Fail metrics, Distribution charts, Auditable corrections).
-    7. Communication & Alerts (Announcements, In-App Notifications, Resilient Email).
-    8. Security Ledger (Immutable audit logs, Regex password redaction, Security response headers).
-    9. Question Bank Oversight (`/admin/questions`).
-    10. Final Deployment Readiness (Production WAR).
-- Automated System Verification Suite (`FinalIntegrationVerification`):
-  - 68 / 68 scenarios passing with 100% success rate across all modules, authorization checks, transaction rollbacks, publication gates, and database hygiene.
-- Production Deployment Packaging:
-  - Successfully packaged standalone `target/ExamPro.war` (8.7 MB).
-  - 81 Java source classes compiled cleanly with zero errors.
-  - Strictly adhering to constraints: Pure Java 17+, Jakarta Servlets 6.0, JSP 3.1, JDBC, MySQL 8+, Apache Tomcat 10.1 (No Spring Boot, No Spring MVC, No Hibernate, No JPA).
+- **Author:** Prathamesh Deodhagle
+- **GitHub Repository:** [https://github.com/Pratham-D1/ExamPro](https://github.com/Pratham-D1/ExamPro)
+- **Project Name:** ExamPro – Online Examination Management System
 
 ---
 
-*ExamPro — All 10 Phases Complete. Ready for Enterprise Production Deployment.*
+<p align="center">
+  <i>Developed with Java, Jakarta Servlets, JSP, JDBC, and Apache Tomcat 10.1.</i>
+</p>
