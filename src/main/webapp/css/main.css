@@ -1,0 +1,1757 @@
+/* ═══════════════════════════════════════════════════════════════
+   main.css  –  ExamPro Global Stylesheet
+   ═══════════════════════════════════════════════════════════════
+   Design System:
+   - Dark, premium theme with deep navy/slate backgrounds
+   - Accent color: vibrant electric blue (#4F8EF7)
+   - Font: Inter (Google Fonts)
+   - Smooth transitions everywhere
+   - Glassmorphism cards on the landing page
+═══════════════════════════════════════════════════════════════ */
+
+/* ───────────────────────────────────────────────────────────────
+   1. CSS CUSTOM PROPERTIES (Design Tokens)
+   These variables drive the entire colour scheme.
+   Change them here to re-theme the whole app instantly.
+─────────────────────────────────────────────────────────────── */
+:root {
+    /* Primary Palette */
+    --ep-bg-primary:    #0d1117;   /* Deep GitHub-like dark background */
+    --ep-bg-secondary:  #161b22;   /* Slightly lighter for cards */
+    --ep-bg-tertiary:   #21262d;   /* Borders and subtle surfaces */
+
+    /* Accent */
+    --ep-accent:        #4f8ef7;   /* Electric blue */
+    --ep-accent-hover:  #3a7be0;   /* Darker blue on hover */
+    --ep-accent-glow:   rgba(79, 142, 247, 0.25);
+
+    /* Text */
+    --ep-text-primary:  #e6edf3;
+    --ep-text-secondary:#8b949e;
+    --ep-text-muted:    #6e7681;
+
+    /* Status Colors */
+    --ep-success:       #3fb950;
+    --ep-warning:       #d29922;
+    --ep-danger:        #f85149;
+
+    /* Role Colors */
+    --ep-admin-color:   #f0883e;   /* Orange for Admin */
+    --ep-teacher-color: #a371f7;   /* Purple for Teacher */
+    --ep-student-color: #3fb950;   /* Green for Student */
+
+    /* Spacing & Shape */
+    --ep-radius-sm:     8px;
+    --ep-radius-md:     12px;
+    --ep-radius-lg:     20px;
+    --ep-radius-xl:     28px;
+
+    /* Shadows */
+    --ep-shadow-sm:     0 2px 8px rgba(0,0,0,0.3);
+    --ep-shadow-md:     0 4px 24px rgba(0,0,0,0.4);
+    --ep-shadow-lg:     0 8px 48px rgba(0,0,0,0.5);
+    --ep-shadow-accent: 0 4px 20px var(--ep-accent-glow);
+
+    /* Transitions */
+    --ep-transition:    all 0.2s ease;
+    --ep-transition-slow: all 0.4s ease;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   2. BASE RESET & TYPOGRAPHY
+─────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: var(--ep-bg-primary);
+    color: var(--ep-text-primary);
+    line-height: 1.6;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--ep-text-primary);
+}
+
+a {
+    color: var(--ep-accent);
+    text-decoration: none;
+    transition: var(--ep-transition);
+}
+
+a:hover {
+    color: var(--ep-accent-hover);
+}
+
+/* Utility: accent color text */
+.text-accent {
+    color: var(--ep-accent) !important;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   3. ACCENT BUTTON
+─────────────────────────────────────────────────────────────── */
+.btn-accent {
+    background: linear-gradient(135deg, var(--ep-accent), #6a5acd);
+    color: #fff;
+    border: none;
+    font-weight: 600;
+    border-radius: var(--ep-radius-md);
+    transition: var(--ep-transition);
+    box-shadow: var(--ep-shadow-accent);
+    letter-spacing: 0.3px;
+}
+
+.btn-accent:hover {
+    background: linear-gradient(135deg, var(--ep-accent-hover), #5a4abf);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 28px var(--ep-accent-glow);
+}
+
+.btn-accent:active {
+    transform: translateY(0);
+}
+
+/* ───────────────────────────────────────────────────────────────
+   4. NAVIGATION BAR
+─────────────────────────────────────────────────────────────── */
+.ep-navbar {
+    background: rgba(13, 17, 23, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--ep-bg-tertiary);
+    padding: 1rem 0;
+}
+
+.ep-navbar .navbar-brand {
+    color: var(--ep-text-primary) !important;
+    letter-spacing: -0.5px;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   5. LANDING PAGE: HERO SECTION
+─────────────────────────────────────────────────────────────── */
+.exampro-landing {
+    overflow-x: hidden;
+}
+
+.ep-hero {
+    position: relative;
+    min-height: 100vh;
+    background:
+        radial-gradient(ellipse at 20% 50%, rgba(79, 142, 247, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(106, 90, 205, 0.12) 0%, transparent 60%),
+        var(--ep-bg-primary);
+    overflow: hidden;
+    padding-top: 100px;
+}
+
+.ep-hero-badge {
+    display: inline-block;
+    background: rgba(79, 142, 247, 0.1);
+    border: 1px solid rgba(79, 142, 247, 0.3);
+    color: var(--ep-accent);
+    border-radius: 50px;
+    padding: 6px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.ep-hero-title {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+}
+
+.ep-hero-subtitle {
+    color: var(--ep-text-secondary);
+    font-size: 1.15rem;
+    font-weight: 400;
+}
+
+/* Decorative background shapes */
+.ep-hero-shape {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.12;
+    pointer-events: none;
+    animation: ep-float 8s ease-in-out infinite;
+}
+
+.ep-shape-1 {
+    width: 600px;
+    height: 600px;
+    background: var(--ep-accent);
+    top: -200px;
+    right: -150px;
+}
+
+.ep-shape-2 {
+    width: 400px;
+    height: 400px;
+    background: #a371f7;
+    bottom: -100px;
+    left: -100px;
+    animation-delay: -4s;
+}
+
+@keyframes ep-float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%       { transform: translate(20px, -20px) scale(1.05); }
+}
+
+/* ───────────────────────────────────────────────────────────────
+   6. LANDING PAGE: FEATURES / ROLE CARDS
+─────────────────────────────────────────────────────────────── */
+.ep-section {
+    padding: 100px 0;
+}
+
+.ep-features-section {
+    background: var(--ep-bg-secondary);
+}
+
+.ep-section-title {
+    font-size: 2.2rem;
+    letter-spacing: -0.5px;
+}
+
+.ep-section-subtitle {
+    font-size: 1.05rem;
+    color: var(--ep-text-secondary);
+}
+
+/* Role Card */
+.ep-card {
+    background: var(--ep-bg-primary);
+    border: 1px solid var(--ep-bg-tertiary);
+    border-radius: var(--ep-radius-lg);
+    padding: 2rem;
+    transition: var(--ep-transition-slow);
+    position: relative;
+    overflow: hidden;
+}
+
+.ep-card:hover {
+    border-color: var(--ep-accent);
+    transform: translateY(-6px);
+    box-shadow: var(--ep-shadow-lg), var(--ep-shadow-accent);
+}
+
+.ep-card-featured {
+    border-color: var(--ep-accent);
+    background: linear-gradient(160deg, rgba(79, 142, 247, 0.07), var(--ep-bg-primary));
+}
+
+.ep-featured-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--ep-accent);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 50px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ep-card-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--ep-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+}
+
+.ep-icon-admin   { background: rgba(240, 136, 62,  0.15); color: var(--ep-admin-color); }
+.ep-icon-teacher { background: rgba(163, 113, 247, 0.15); color: var(--ep-teacher-color); }
+.ep-icon-student { background: rgba(63,  185, 80,  0.15); color: var(--ep-student-color); }
+
+.ep-card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+}
+
+.ep-card-text {
+    color: var(--ep-text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+.ep-feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ep-feature-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--ep-text-secondary);
+    font-size: 0.88rem;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--ep-bg-tertiary);
+}
+
+.ep-feature-list li:last-child {
+    border-bottom: none;
+}
+
+.ep-feature-list li i {
+    color: var(--ep-success);
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   7. STATS SECTION
+─────────────────────────────────────────────────────────────── */
+.ep-stats-section {
+    background: linear-gradient(135deg, #1a237e 0%, #0d1117 100%);
+    padding: 80px 0;
+    border-top: 1px solid var(--ep-bg-tertiary);
+    border-bottom: 1px solid var(--ep-bg-tertiary);
+}
+
+.ep-stat-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--ep-accent);
+    letter-spacing: -1px;
+}
+
+.ep-stat-label {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   8. FOOTER
+─────────────────────────────────────────────────────────────── */
+.ep-footer {
+    background: var(--ep-bg-secondary);
+    border-top: 1px solid var(--ep-bg-tertiary);
+}
+
+/* ───────────────────────────────────────────────────────────────
+   9. LOGIN PAGE
+─────────────────────────────────────────────────────────────── */
+.ep-login-page {
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.ep-login-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Left branding panel */
+.ep-login-brand {
+    width: 45%;
+    flex-shrink: 0;
+    background:
+        radial-gradient(ellipse at 30% 40%, rgba(79, 142, 247, 0.3), transparent 60%),
+        linear-gradient(160deg, #0f1a3e 0%, #0d1117 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    border-right: 1px solid var(--ep-bg-tertiary);
+    position: relative;
+    overflow: hidden;
+}
+
+.ep-login-brand::before {
+    content: '';
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: var(--ep-accent);
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.08;
+    top: -100px;
+    right: -100px;
+}
+
+.ep-brand-logo {
+    font-size: 5rem;
+    color: var(--ep-accent);
+    animation: ep-pulse 3s ease-in-out infinite;
+}
+
+@keyframes ep-pulse {
+    0%, 100% { filter: drop-shadow(0 0 10px var(--ep-accent-glow)); }
+    50%       { filter: drop-shadow(0 0 30px var(--ep-accent)); }
+}
+
+.ep-brand-tagline {
+    color: rgba(255,255,255,0.7);
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.ep-brand-features {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+.ep-brand-feature {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--ep-radius-md);
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.85);
+}
+
+.ep-brand-feature i {
+    font-size: 1.2rem;
+    color: var(--ep-accent);
+}
+
+/* Right form panel */
+.ep-login-form-panel {
+    flex: 1;
+    padding: 3rem 2rem;
+    background: var(--ep-bg-primary);
+    overflow-y: auto;
+}
+
+.ep-login-form-container {
+    max-width: 440px;
+    margin: 0 auto;
+}
+
+.ep-login-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--ep-text-primary);
+    letter-spacing: -0.5px;
+    margin-bottom: 0.25rem;
+}
+
+.ep-login-subtitle {
+    color: var(--ep-text-secondary);
+    font-size: 0.95rem;
+}
+
+/* Form Controls */
+.ep-form-label {
+    font-weight: 500;
+    font-size: 0.88rem;
+    color: var(--ep-text-secondary);
+    margin-bottom: 6px;
+    letter-spacing: 0.2px;
+}
+
+.ep-input-group .input-group-text {
+    background: var(--ep-bg-secondary);
+    border: 1px solid var(--ep-bg-tertiary);
+    border-right: none;
+    color: var(--ep-text-muted);
+}
+
+.ep-form-control,
+.form-control.ep-form-control,
+.form-select.ep-form-control {
+    background: var(--ep-bg-secondary) !important;
+    border: 1px solid var(--ep-bg-tertiary) !important;
+    color: var(--ep-text-primary) !important;
+    border-radius: 0 var(--ep-radius-sm) var(--ep-radius-sm) 0 !important;
+    padding: 12px 16px;
+    font-size: 0.93rem;
+    transition: var(--ep-transition);
+}
+
+/* Standalone select (no input-group) */
+select.ep-form-control {
+    border-radius: var(--ep-radius-sm) !important;
+}
+
+.ep-form-control:focus,
+.form-control.ep-form-control:focus,
+.form-select.ep-form-control:focus {
+    background: var(--ep-bg-secondary) !important;
+    border-color: var(--ep-accent) !important;
+    color: var(--ep-text-primary) !important;
+    box-shadow: 0 0 0 3px var(--ep-accent-glow) !important;
+    outline: none;
+}
+
+.ep-form-control::placeholder {
+    color: var(--ep-text-muted) !important;
+}
+
+/* Password toggle button */
+.ep-toggle-pwd {
+    background: var(--ep-bg-secondary);
+    border: 1px solid var(--ep-bg-tertiary);
+    border-left: none;
+    color: var(--ep-text-muted);
+    padding: 0 14px;
+    border-radius: 0 var(--ep-radius-sm) var(--ep-radius-sm) 0 !important;
+    transition: var(--ep-transition);
+}
+
+.ep-toggle-pwd:hover {
+    background: var(--ep-bg-tertiary);
+    color: var(--ep-text-primary);
+}
+
+/* Login Button */
+.ep-login-btn {
+    padding: 13px 0;
+    font-size: 1rem;
+    letter-spacing: 0.3px;
+    border-radius: var(--ep-radius-md) !important;
+}
+
+.ep-back-link {
+    color: var(--ep-text-secondary);
+    font-size: 0.88rem;
+    transition: var(--ep-transition);
+}
+
+.ep-back-link:hover {
+    color: var(--ep-accent);
+}
+
+/* Bootstrap select option color fix */
+.form-select.ep-form-control option {
+    background: var(--ep-bg-secondary);
+    color: var(--ep-text-primary);
+}
+
+/* ───────────────────────────────────────────────────────────────
+   10. CUSTOM SCROLLBAR
+─────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--ep-bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--ep-bg-tertiary);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--ep-text-muted);
+}
+
+/* ───────────────────────────────────────────────────────────────
+   11. BOOTSTRAP OVERRIDES (Dark Theme Fixes)
+─────────────────────────────────────────────────────────────── */
+.alert-danger {
+    background: rgba(248, 81, 73, 0.12);
+    border: 1px solid rgba(248, 81, 73, 0.3);
+    color: #ff7b72;
+}
+
+.alert-success {
+    background: rgba(63, 185, 80, 0.12);
+    border: 1px solid rgba(63, 185, 80, 0.3);
+    color: #7ee787;
+}
+
+.btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+    opacity: 0.6;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   12. RESPONSIVE
+─────────────────────────────────────────────────────────────── */
+@media (max-width: 991px) {
+    .ep-login-wrapper {
+        flex-direction: column;
+    }
+
+    .ep-login-form-panel {
+        padding: 2.5rem 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .ep-hero-title {
+        font-size: 2.2rem;
+        letter-spacing: -0.5px;
+    }
+
+    .ep-section {
+        padding: 60px 0;
+    }
+}
+
+/* ───────────────────────────────────────────────────────────────
+   13. ADMIN DASHBOARD DESIGN SYSTEM (Phase 4.1)
+─────────────────────────────────────────────────────────────── */
+
+.ep-admin-wrapper {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--ep-bg-primary);
+}
+
+/* Sidebar Styling */
+.ep-admin-sidebar {
+    width: 270px;
+    background-color: #11151c;
+    border-right: 1px solid var(--ep-bg-tertiary);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1040;
+}
+
+.ep-sidebar-header {
+    padding: 1.5rem 1.25rem 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.ep-sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: var(--ep-text-primary);
+}
+
+.ep-sidebar-brand-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--ep-radius-md);
+    background: linear-gradient(135deg, #f0883e, #d29922);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.35rem;
+    box-shadow: 0 4px 14px rgba(240, 136, 62, 0.35);
+}
+
+.ep-sidebar-brand-text {
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: -0.3px;
+    color: #fff;
+    line-height: 1.1;
+}
+
+.ep-sidebar-brand-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #f0883e;
+    background: rgba(240, 136, 62, 0.12);
+    padding: 2px 7px;
+    border-radius: 999px;
+    border: 1px solid rgba(240, 136, 62, 0.3);
+    margin-top: 4px;
+}
+
+.ep-sidebar-nav {
+    flex-grow: 1;
+    padding: 1rem 0;
+    overflow-y: auto;
+}
+
+.ep-nav-section-title {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    color: var(--ep-text-muted);
+    padding: 0.75rem 1.5rem 0.35rem;
+}
+
+.ep-sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.75rem 1.25rem;
+    margin: 3px 12px;
+    border-radius: var(--ep-radius-sm);
+    color: var(--ep-text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.92rem;
+    transition: var(--ep-transition);
+    border-left: 3px solid transparent;
+}
+
+.ep-sidebar-link i {
+    font-size: 1.15rem;
+    transition: transform 0.2s ease;
+}
+
+.ep-sidebar-link:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.04);
+    border-left-color: rgba(240, 136, 62, 0.5);
+    transform: translateX(2px);
+}
+
+.ep-sidebar-link:hover i {
+    transform: scale(1.1);
+}
+
+.ep-sidebar-link.active {
+    color: #fff;
+    background: linear-gradient(90deg, rgba(240, 136, 62, 0.18), rgba(240, 136, 62, 0.03));
+    border-left-color: #f0883e;
+    font-weight: 600;
+}
+
+.ep-sidebar-link.active i {
+    color: #f0883e;
+}
+
+.ep-sidebar-link-btn {
+    width: calc(100% - 24px);
+    background: transparent;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+}
+
+.ep-sidebar-link-btn:hover {
+    background-color: rgba(248, 81, 73, 0.1);
+    color: var(--ep-danger) !important;
+    border-left-color: var(--ep-danger);
+}
+
+.ep-sidebar-link-btn:hover i {
+    color: var(--ep-danger);
+}
+
+.ep-sidebar-badge {
+    margin-left: auto;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 3px 7px;
+    border-radius: 999px;
+    letter-spacing: 0.02em;
+}
+
+.ep-sidebar-footer {
+    padding: 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.ep-admin-user-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.ep-admin-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f0883e, #a371f7);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+}
+
+/* Main Content Area */
+.ep-admin-main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background-color: var(--ep-bg-primary);
+}
+
+/* Top Navigation Bar */
+.ep-admin-topbar {
+    background: rgba(17, 21, 28, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--ep-bg-tertiary);
+    padding: 0.85rem 1.75rem;
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ep-topbar-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.88rem;
+    color: var(--ep-text-secondary);
+}
+
+.ep-topbar-breadcrumb .active {
+    color: #fff;
+    font-weight: 600;
+}
+
+.ep-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Welcome Hero */
+.ep-welcome-banner {
+    background: linear-gradient(135deg, rgba(240, 136, 62, 0.12) 0%, rgba(22, 27, 34, 0.9) 60%, rgba(13, 17, 23, 1) 100%);
+    border: 1px solid rgba(240, 136, 62, 0.25);
+    border-radius: var(--ep-radius-lg);
+    padding: 1.75rem 2rem;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 1.75rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.ep-welcome-banner::after {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 180px;
+    height: 180px;
+    background: radial-gradient(circle, rgba(240, 136, 62, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+/* Statistics Cards */
+.ep-stat-card {
+    background: var(--ep-bg-secondary);
+    border: 1px solid var(--ep-bg-tertiary);
+    border-radius: var(--ep-radius-md);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    transition: var(--ep-transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.ep-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.ep-stat-card.card-students:hover {
+    border-color: rgba(63, 185, 80, 0.5);
+}
+
+.ep-stat-card.card-teachers:hover {
+    border-color: rgba(163, 113, 247, 0.5);
+}
+
+.ep-stat-card.card-subjects:hover {
+    border-color: rgba(79, 142, 247, 0.5);
+}
+
+.ep-stat-card.card-exams:hover {
+    border-color: rgba(240, 136, 62, 0.5);
+}
+
+.ep-stat-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.ep-stat-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ep-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.35rem;
+}
+
+.ep-stat-value {
+    font-size: 2.25rem;
+    font-weight: 800;
+    line-height: 1.1;
+    color: #fff;
+    letter-spacing: -0.5px;
+}
+
+.ep-stat-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--ep-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.icon-students {
+    background: rgba(63, 185, 80, 0.12);
+    color: var(--ep-student-color);
+    border: 1px solid rgba(63, 185, 80, 0.25);
+}
+
+.icon-teachers {
+    background: rgba(163, 113, 247, 0.12);
+    color: var(--ep-teacher-color);
+    border: 1px solid rgba(163, 113, 247, 0.25);
+}
+
+.icon-subjects {
+    background: rgba(79, 142, 247, 0.12);
+    color: var(--ep-accent);
+    border: 1px solid rgba(79, 142, 247, 0.25);
+}
+
+.icon-exams {
+    background: rgba(240, 136, 62, 0.12);
+    color: var(--ep-admin-color);
+    border: 1px solid rgba(240, 136, 62, 0.25);
+}
+
+.ep-stat-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.85rem;
+    margin-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.82rem;
+}
+
+/* Quick Action Buttons */
+.ep-action-btn {
+    background: var(--ep-bg-secondary);
+    border: 1px solid var(--ep-bg-tertiary);
+    border-radius: var(--ep-radius-md);
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    color: var(--ep-text-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--ep-transition);
+}
+
+.ep-action-btn:hover {
+    background: var(--ep-bg-tertiary);
+    border-color: rgba(240, 136, 62, 0.4);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.ep-action-btn i {
+    font-size: 1.35rem;
+    color: #f0883e;
+}
+
+/* Tables and Activity Stream */
+.ep-card {
+    background: var(--ep-bg-secondary);
+    border: 1px solid var(--ep-bg-tertiary);
+    border-radius: var(--ep-radius-md);
+    box-shadow: var(--ep-shadow-sm);
+    overflow: hidden;
+}
+
+.ep-card-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--ep-bg-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.ep-card-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ep-table-custom {
+    width: 100%;
+    margin-bottom: 0;
+    color: var(--ep-text-primary);
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.ep-table-custom th {
+    background: rgba(13, 17, 23, 0.6);
+    color: var(--ep-text-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.85rem 1.25rem;
+    border-bottom: 1px solid var(--ep-bg-tertiary);
+}
+
+.ep-table-custom td {
+    padding: 1rem 1.25rem;
+    vertical-align: middle;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    font-size: 0.9rem;
+}
+
+.ep-table-custom tr:hover td {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+.ep-table-custom tr:last-child td {
+    border-bottom: none;
+}
+
+/* Role Badges */
+.badge-role-admin {
+    background: rgba(240, 136, 62, 0.15);
+    color: #f0883e;
+    border: 1px solid rgba(240, 136, 62, 0.35);
+    font-weight: 600;
+    font-size: 0.72rem;
+    padding: 4px 8px;
+    border-radius: 999px;
+}
+
+.badge-role-teacher {
+    background: rgba(163, 113, 247, 0.15);
+    color: #a371f7;
+    border: 1px solid rgba(163, 113, 247, 0.35);
+    font-weight: 600;
+    font-size: 0.72rem;
+    padding: 4px 8px;
+    border-radius: 999px;
+}
+
+.badge-role-student {
+    background: rgba(63, 185, 80, 0.15);
+    color: #3fb950;
+    border: 1px solid rgba(63, 185, 80, 0.35);
+    font-weight: 600;
+    font-size: 0.72rem;
+    padding: 4px 8px;
+    border-radius: 999px;
+}
+
+/* Responsive Sidebar Behavior */
+@media (max-width: 991.98px) {
+    .ep-admin-sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        transform: translateX(-100%);
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+    }
+
+    .ep-admin-sidebar.show {
+        transform: translateX(0);
+    }
+
+    .ep-sidebar-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(4px);
+        z-index: 1030;
+        display: none;
+    }
+
+    .ep-sidebar-backdrop.show {
+        display: block;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TEACHER PANEL EXTENDED STYLES (Phase 5)
+   ═══════════════════════════════════════════════════════════════ */
+.ep-teacher-brand-icon {
+    background: linear-gradient(135deg, #a371f7, #6f42c1) !important;
+    box-shadow: 0 4px 14px rgba(163, 113, 247, 0.35) !important;
+}
+
+.ep-teacher-brand-badge {
+    color: #a371f7 !important;
+    background: rgba(163, 113, 247, 0.12) !important;
+    border: 1px solid rgba(163, 113, 247, 0.3) !important;
+}
+
+.ep-welcome-banner-teacher {
+    background: linear-gradient(135deg, rgba(163, 113, 247, 0.14) 0%, rgba(22, 27, 34, 0.9) 60%, rgba(13, 17, 23, 1) 100%) !important;
+    border-color: rgba(163, 113, 247, 0.3) !important;
+}
+
+.ep-sidebar-link.teacher-active {
+    color: #fff !important;
+    background: linear-gradient(90deg, rgba(163, 113, 247, 0.18), rgba(163, 113, 247, 0.03)) !important;
+    border-left-color: #a371f7 !important;
+    font-weight: 600 !important;
+}
+
+.ep-sidebar-link.teacher-active i {
+    color: #a371f7 !important;
+}
+
+.ep-sidebar-link:hover {
+    border-left-color: rgba(163, 113, 247, 0.5);
+}
+
+.ep-metric-icon-purple {
+    background: rgba(163, 113, 247, 0.15) !important;
+    color: #a371f7 !important;
+}
+
+.mcq-option-box {
+    background: var(--ep-bg-primary);
+    border: 1px solid var(--ep-bg-tertiary);
+    border-radius: var(--ep-radius-sm);
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: var(--ep-transition);
+}
+
+.mcq-option-box.correct {
+    border-color: rgba(63, 185, 80, 0.5);
+    background: rgba(63, 185, 80, 0.08);
+}
+
+.mcq-option-key {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: var(--ep-bg-tertiary);
+    color: var(--ep-text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
+.mcq-option-box.correct .mcq-option-key {
+    background: #3fb950;
+    color: #fff;
+}
+
+.mcq-badge-difficulty-easy {
+    background: rgba(63, 185, 80, 0.15);
+    color: #3fb950;
+    border: 1px solid rgba(63, 185, 80, 0.3);
+}
+
+.mcq-badge-difficulty-medium {
+    background: rgba(210, 153, 34, 0.15);
+    color: #d29922;
+    border: 1px solid rgba(210, 153, 34, 0.3);
+}
+
+.mcq-badge-difficulty-hard {
+    background: rgba(248, 81, 73, 0.15);
+    color: #f85149;
+    border: 1px solid rgba(248, 81, 73, 0.3);
+}
+
+.exam-readiness-card {
+    background: var(--ep-bg-secondary);
+    border: 1px solid var(--ep-bg-tertiary);
+    border-radius: var(--ep-radius-md);
+    padding: 1.25rem;
+}
+
+/* ==========================================================================
+   Phase 6: Student Portal & Examination Engine Styles
+   ========================================================================== */
+
+:root {
+    --ep-student-accent: #2ea043;
+    --ep-student-accent-hover: #3fb950;
+    --ep-student-accent-subtle: rgba(46, 160, 67, 0.15);
+    --ep-review-color: #8957e5;
+    --ep-review-subtle: rgba(137, 87, 229, 0.15);
+}
+
+/* Student Sidebar Navigation */
+.ep-sidebar-link.student-active {
+    background: var(--ep-student-accent-subtle) !important;
+    color: var(--ep-student-accent-hover) !important;
+    border-left: 3px solid var(--ep-student-accent-hover) !important;
+    font-weight: 600;
+}
+
+.ep-sidebar-link.student-active i {
+    color: var(--ep-student-accent-hover) !important;
+}
+
+/* Student Metric Badges & Icons */
+.ep-metric-icon-student {
+    background: var(--ep-student-accent-subtle) !important;
+    color: var(--ep-student-accent-hover) !important;
+}
+
+/* Exam Room Container */
+.exam-room-header {
+    background: var(--ep-bg-secondary);
+    border: 1px solid var(--ep-bg-tertiary);
+    border-radius: var(--ep-radius-md);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Countdown Timer */
+.exam-timer-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--ep-bg-primary);
+    border: 1px solid var(--ep-bg-tertiary);
+    border-radius: 30px;
+    padding: 0.5rem 1.25rem;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--ep-text-primary);
+    transition: all 0.3s ease;
+}
+
+.exam-timer-card.timer-normal {
+    border-color: rgba(46, 160, 67, 0.4);
+    color: #3fb950;
+}
+
+.exam-timer-card.timer-warning {
+    border-color: rgba(210, 153, 34, 0.6);
+    color: #d29922;
+    background: rgba(210, 153, 34, 0.1);
+}
+
+.exam-timer-card.timer-urgent {
+    border-color: rgba(248, 81, 73, 0.8);
+    color: #f85149;
+    background: rgba(248, 81, 73, 0.15);
+    animation: timerPulse 1s infinite alternate;
+}
+
+@keyframes timerPulse {
+    0% { transform: scale(1); box-shadow: 0 0 4px rgba(248, 81, 73, 0.4); }
+    100% { transform: scale(1.04); box-shadow: 0 0 14px rgba(248, 81, 73, 0.8); }
+}
+
+/* Live Exam Question Card */
+.take-question-box {
+    background: var(--ep-bg-secondary);
+    border: 1px solid var(--ep-bg-tertiary);
+    border-radius: var(--ep-radius-md);
+    padding: 1.75rem;
+    min-height: 480px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.take-question-text {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--ep-text-primary);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+/* MCQ Interactive Option Radio Cards */
+.take-options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.take-option-item {
+    position: relative;
+}
+
+.take-option-label {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--ep-bg-primary);
+    border: 1px solid var(--ep-bg-tertiary);
+    border-radius: var(--ep-radius-md);
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    color: var(--ep-text-primary);
+}
+
+.take-option-label:hover {
+    border-color: rgba(56, 139, 253, 0.5);
+    background: rgba(56, 139, 253, 0.05);
+    transform: translateY(-1px);
+}
+
+.take-option-label.active-selected {
+    border-color: var(--ep-student-accent-hover) !important;
+    background: rgba(46, 160, 67, 0.12) !important;
+    box-shadow: 0 0 0 1px var(--ep-student-accent-hover);
+}
+
+.take-option-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--ep-bg-tertiary);
+    color: var(--ep-text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.take-option-label.active-selected .take-option-badge {
+    background: var(--ep-student-accent-hover);
+    color: #ffffff;
+}
+
+.take-option-text {
+    font-size: 1rem;
+    line-height: 1.45;
+    flex-grow: 1;
+}
+
+/* Question Palette Sidebar */
+.question-palette-card {
+    background: var(--ep-bg-secondary);
+    border: 1px solid var(--ep-bg-tertiary);
+    border-radius: var(--ep-radius-md);
+    padding: 1.25rem;
+}
+
+.question-palette-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    max-height: 320px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.palette-btn {
+    width: 100%;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 1px solid var(--ep-bg-tertiary);
+    background: var(--ep-bg-primary);
+    color: var(--ep-text-secondary);
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.palette-btn:hover {
+    border-color: var(--ep-accent);
+    color: var(--ep-text-primary);
+}
+
+/* Palette Status States */
+.palette-btn.status-answered {
+    background: #238636;
+    border-color: #2ea043;
+    color: #ffffff;
+}
+
+.palette-btn.status-review {
+    background: #8957e5;
+    border-color: #a371f7;
+    color: #ffffff;
+}
+
+.palette-btn.status-answered-review {
+    background: linear-gradient(135deg, #238636 50%, #8957e5 50%);
+    border-color: #a371f7;
+    color: #ffffff;
+}
+
+.palette-btn.status-current {
+    box-shadow: 0 0 0 2px #58a6ff;
+    border-color: #58a6ff;
+    font-weight: 800;
+}
+
+/* Legend items */
+.palette-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: var(--ep-text-secondary);
+}
+
+.palette-legend-swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    border: 1px solid var(--ep-bg-tertiary);
+}
+
+/* Result Review Items */
+.review-question-card {
+    background: var(--ep-bg-secondary);
+    border: 1px solid var(--ep-bg-tertiary);
+    border-radius: var(--ep-radius-md);
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.review-option-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem 1.15rem;
+    border-radius: var(--ep-radius-sm);
+    border: 1px solid var(--ep-bg-tertiary);
+    background: var(--ep-bg-primary);
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.review-option-card.correct-answer {
+    border-color: rgba(63, 185, 80, 0.6);
+    background: rgba(63, 185, 80, 0.1);
+}
+
+.review-option-card.wrong-answer {
+    border-color: rgba(248, 81, 73, 0.6);
+    background: rgba(248, 81, 73, 0.1);
+}
+
+.review-explanation-box {
+    background: rgba(56, 139, 253, 0.08);
+    border-left: 3px solid #58a6ff;
+    padding: 0.85rem 1.15rem;
+    border-radius: 0 var(--ep-radius-sm) var(--ep-radius-sm) 0;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: var(--ep-text-secondary);
+}
+
+/* ==========================================================================
+   Phase 7: Result Management, Analytics & High-Definition Print Styles
+   ========================================================================== */
+
+/* Print & Report Headers */
+.ep-report-header {
+    border-bottom: 2px solid var(--ep-bg-tertiary);
+    padding-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.ep-report-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--ep-text-primary);
+}
+
+.ep-report-subtitle {
+    font-size: 0.9rem;
+    color: var(--ep-text-secondary);
+}
+
+/* Weak Area & Strength Cards */
+.ep-analytics-card {
+    background: var(--ep-bg-secondary);
+    border: 1px solid var(--ep-bg-tertiary);
+    border-radius: var(--ep-radius-md);
+    padding: 1.25rem;
+    height: 100%;
+}
+
+.ep-weak-area-pill {
+    background: rgba(248, 81, 73, 0.12);
+    border: 1px solid rgba(248, 81, 73, 0.3);
+    color: #f85149;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 4px;
+}
+
+.ep-strength-pill {
+    background: rgba(46, 160, 67, 0.12);
+    border: 1px solid rgba(46, 160, 67, 0.3);
+    color: #3fb950;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 4px;
+}
+
+/* Chart Canvas Wrapper */
+.chart-container-responsive {
+    position: relative;
+    width: 100%;
+    min-height: 240px;
+}
+
+/* ══════════════════════════════════════════════
+   HIGH-DEFINITION PRINT MEDIA STYLES
+   ══════════════════════════════════════════════ */
+@media print {
+    body, html {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 10pt !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .ep-admin-sidebar,
+    .ep-sidebar-backdrop,
+    .ep-admin-topbar,
+    .navbar,
+    .btn,
+    .pagination,
+    .no-print,
+    .alert-dismissible,
+    #sidebarToggle,
+    .btn-close {
+        display: none !important;
+    }
+
+    .ep-admin-wrapper,
+    .ep-admin-main,
+    .ep-admin-content,
+    .container,
+    .container-fluid {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .card,
+    .ep-card,
+    .take-question-box,
+    .review-question-card {
+        background: #ffffff !important;
+        border: 1px solid #cccccc !important;
+        color: #000000 !important;
+        box-shadow: none !important;
+        page-break-inside: avoid;
+    }
+
+    .table {
+        color: #000000 !important;
+        background: #ffffff !important;
+        border-collapse: collapse !important;
+        width: 100% !important;
+    }
+
+    .table th,
+    .table td {
+        border: 1px solid #dddddd !important;
+        color: #000000 !important;
+        padding: 6px 8px !important;
+        font-size: 9pt !important;
+    }
+
+    .badge {
+        border: 1px solid #333333 !important;
+        color: #000000 !important;
+        background: transparent !important;
+    }
+
+    .ep-print-watermark {
+        position: fixed;
+        bottom: 10mm;
+        right: 15mm;
+        font-size: 8pt;
+        color: #888888;
+    }
+
+    .ep-signature-section {
+        margin-top: 40px;
+        page-break-inside: avoid;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .ep-signature-box {
+        width: 200px;
+        border-top: 1px solid #000000;
+        text-align: center;
+        padding-top: 5px;
+        font-size: 9pt;
+    }
+}
+
+/* ==========================================================================
+   Phase 10: Final Integration & Unified Polish Styles
+   ========================================================================== */
+
+/* Custom Dark Scrollbars */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--ep-bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--ep-bg-tertiary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--ep-text-muted);
+}
+
+/* Unified Empty State UI Component */
+.ep-empty-state {
+    padding: 3.5rem 1.5rem;
+    text-align: center;
+    color: var(--ep-text-secondary);
+}
+
+.ep-empty-state-icon {
+    font-size: 3.5rem;
+    color: var(--ep-text-muted);
+    margin-bottom: 1rem;
+    display: inline-block;
+    opacity: 0.8;
+}
+
+.ep-empty-state-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--ep-text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.ep-empty-state-desc {
+    font-size: 0.9rem;
+    color: var(--ep-text-secondary);
+    max-width: 480px;
+    margin: 0 auto 1.5rem auto;
+}
+
+/* Subtle Card & Table Hover Polish */
+.table-hover > tbody > tr:hover > * {
+    background-color: rgba(79, 142, 247, 0.05) !important;
+    color: var(--ep-text-primary);
+}
+
+/* Modal Polish */
+.modal-content {
+    border-radius: var(--ep-radius-md);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+}
+
+.modal-backdrop.show {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+/* Form Controls Focus Outline */
+.form-control:focus, .form-select:focus {
+    border-color: var(--ep-accent) !important;
+    box-shadow: 0 0 0 0.25rem var(--ep-accent-glow) !important;
+}
+
+/* Metric Card Subtle Elevation */
+.ep-metric-card, .card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ep-metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+
+
